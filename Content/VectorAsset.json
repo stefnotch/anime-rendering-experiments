@@ -1,0 +1,62 @@
+{
+	"ID": "2ccd68984b42be3ef2a856a6ea57afd4",
+	"TypeName": "Game.VectorGraphics",
+	"EngineBuild": 6216,
+	"Data": {
+	"Size": {
+		"X": 64,
+		"Y": 64
+	},
+	"FadeStrength": 20.0,
+	"LineSegments": [
+		{
+			"Start": {
+				"X": 24.5999985,
+				"Y": 48.2000122
+			},
+			"End": {
+				"X": 1.39999962,
+				"Y": 15.3999939
+			},
+			"LeftColor": {
+				"R": 0.4654445,
+				"G": 0.101578623,
+				"B": 0.06200092,
+				"A": 1.0
+			},
+			"LeftFaceLayer": 0,
+			"RightColor": {
+				"R": 0.0582974628,
+				"G": 0.118631028,
+				"B": 1.001,
+				"A": 1.0
+			},
+			"RightFaceLayer": 1
+		},
+		{
+			"Start": {
+				"X": 1.39999962,
+				"Y": 15.3999939
+			},
+			"End": {
+				"X": 47.0,
+				"Y": 17.8000031
+			},
+			"LeftColor": {
+				"R": 0.4654445,
+				"G": 0.101578623,
+				"B": 0.06200092,
+				"A": 1.0
+			},
+			"LeftFaceLayer": 0,
+			"RightColor": {
+				"R": 0.0582974628,
+				"G": 0.118631028,
+				"B": 1.001,
+				"A": 1.0
+			},
+			"RightFaceLayer": 1
+		}
+	]
+}
+}
