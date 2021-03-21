@@ -29,63 +29,93 @@ namespace Game
         public float FadeStrength { get; set; } = 1;
 
         [Serialize]
+        public float FadeShift { get; set; } = 0.5f;
+
+        [Serialize]
         public List<LineSegment> LineSegments { get; set; } = new List<LineSegment>();
 
         public unsafe void GenerateTexture()
         {
-            var texture = Content.CreateVirtualAsset<Texture>();
+            var distanceTexture = Content.CreateVirtualAsset<Texture>();
+            var colorTexture = Content.CreateVirtualAsset<Texture>();
             try
             {
-                TextureBase.InitData initData;
-                initData.Width = Size.X;
-                initData.Height = Size.Y;
-                initData.ArraySize = 1;
-                initData.Format = PixelFormat.R8G8B8A8_UNorm;
+                TextureBase.InitData distancesInitData;
+                distancesInitData.Width = Size.X;
+                distancesInitData.Height = Size.Y;
+                distancesInitData.ArraySize = 1;
+                distancesInitData.Format = PixelFormat.R8G8B8A8_UNorm;
 
-                byte[] data = new byte[initData.Width * initData.Height * PixelFormatExtensions.SizeInBytes(initData.Format)];
+                TextureBase.InitData colorsInitData;
+                colorsInitData.Width = Size.X;
+                colorsInitData.Height = Size.Y;
+                colorsInitData.ArraySize = 1;
+                colorsInitData.Format = PixelFormat.R8G8B8A8_UNorm;
+
+                byte[] distancesData = new byte[distancesInitData.Width * distancesInitData.Height * PixelFormatExtensions.SizeInBytes(distancesInitData.Format)];
+                byte[] colorsData = new byte[colorsInitData.Width * colorsInitData.Height * PixelFormatExtensions.SizeInBytes(colorsInitData.Format)];
+
                 float[] distances = new float[NumberOfLayers];
-                Color[] colors = new Color[NumberOfLayers];
 
-                fixed (byte* dataPtr = data)
+                fixed (byte* distancesDataPtr = distancesData, colorDataPtr = colorsData)
                 {
-                    var colorsPtr = (Color32*)dataPtr;
-                    for (int y = 0; y < initData.Height; y++)
+
+                    var distancesPtr = (Color32*)distancesDataPtr;
+                    var colorsPtr = (Color32*)colorDataPtr;
+                    for (int y = 0; y < distancesInitData.Height; y++)
                     {
-                        for (int x = 0; x < initData.Width; x++)
+                        for (int x = 0; x < distancesInitData.Width; x++)
                         {
                             Vector2 point = new Vector2(x, y);
-                            CalculateDistancesAtPoint(ref point, distances, colors);
+                            CalculateDistancesAtPoint(ref point, distances, out Color color);
 
-                            colorsPtr[(y * initData.Width) + x] = new Color32(
-                                ClampToByte(distances[0] * FadeStrength),
-                                ClampToByte(distances[1] * FadeStrength),
-                                ClampToByte(distances[2] * FadeStrength),
-                                ClampToByte(distances[3] * FadeStrength)
+                            distancesPtr[(y * distancesInitData.Width) + x] = new Color32(
+                                ClampToByte(distances[0] * FadeStrength + FadeShift * byte.MaxValue),
+                                ClampToByte(distances[1] * FadeStrength + FadeShift * byte.MaxValue),
+                                ClampToByte(distances[2] * FadeStrength + FadeShift * byte.MaxValue),
+                                ClampToByte(distances[3] * FadeStrength + FadeShift * byte.MaxValue)
                             );
-                            // TODO: Colors
+
+                            colorsPtr[(y * distancesInitData.Width) + x] = color;
                         }
                     }
                 }
 
-                initData.Mips = new[]
+                distancesInitData.Mips = new[]
                 {
                     new TextureBase.InitData.MipData
                     {
-                        Data = data,
-                        RowPitch = data.Length / initData.Height,
-                        SlicePitch = data.Length
+                        Data = distancesData,
+                        RowPitch = distancesData.Length / distancesInitData.Height,
+                        SlicePitch = distancesData.Length
                     }
                 };
-                texture.Init(ref initData);
-                texture.WaitForLoaded();
-                texture.Save(Path.Combine(Globals.ProjectContentFolder, "MyTexture.flax")); // TODO: Delete/move previous texture?
+
+                colorsInitData.Mips = new[]
+                 {
+                    new TextureBase.InitData.MipData
+                    {
+                        Data = colorsData,
+                        RowPitch = colorsData.Length / colorsInitData.Height,
+                        SlicePitch = colorsData.Length
+                    }
+                };
+
+                distanceTexture.Init(ref distancesInitData);
+                distanceTexture.WaitForLoaded();
+                distanceTexture.Save(Path.Combine(Globals.ProjectContentFolder, "DistanceTexture.flax")); // TODO: Delete/move previous texture?
+
+                colorTexture.Init(ref colorsInitData);
+                colorTexture.WaitForLoaded();
+                colorTexture.Save(Path.Combine(Globals.ProjectContentFolder, "ColorTexture.flax")); // TODO: Delete/move previous texture?
             }
             catch (Exception e)
             {
                 Debug.LogException(e);
             }
 
-            FlaxEngine.Object.Destroy(texture);
+            FlaxEngine.Object.Destroy(distanceTexture);
+            FlaxEngine.Object.Destroy(colorTexture);
         }
 
         private byte ClampToByte(float value)
@@ -106,8 +136,8 @@ namespace Game
         /// </summary>
         /// <param name="point">The point</param>
         /// <param name="distances">The distances</param>
-        /// <param name="colors">The colors</param>
-        public void CalculateDistancesAtPoint(ref Vector2 point, float[] distances, Color[] colors)
+        /// <param name="color">The color</param>
+        public void CalculateDistancesAtPoint(ref Vector2 point, float[] distances, out Color color)
         {
             float minDistance = float.PositiveInfinity;
             byte minLayer = 0;
@@ -117,6 +147,8 @@ namespace Game
             {
                 distances[i] = float.PositiveInfinity;
             }
+
+            color = Color.Black;
 
             // Find the closest distance for every layer
             for (int i = 0; i < LineSegments.Count; i++)
@@ -132,7 +164,7 @@ namespace Game
                 if (distance < distances[layer])
                 {
                     distances[layer] = distance;
-                    colors[layer] = isRight ? segment.LeftColor : segment.RightColor; // TODO: Only use a single color texture
+                    color = isRight ? segment.LeftColor : segment.RightColor; // TODO: Is this color setting good enough?
 
                     if (distance < minDistance)
                     {
@@ -143,11 +175,11 @@ namespace Game
                 }
             }
 
-            // I'm inside the min-distance layer. Color me fullbright
+            // I'm inside the min-distance layer, thus the distance is *negative*
             if (minDistance < float.PositiveInfinity)
             {
-                distances[minLayer] = 0; // This will be black, because we're working with an 'inverted' texture
-                colors[minLayer] = minColor;
+                distances[minLayer] = -minDistance;
+                color = minColor;
             }
 
             // Original algorithm idea:

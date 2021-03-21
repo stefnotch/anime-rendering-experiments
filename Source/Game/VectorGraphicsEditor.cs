@@ -18,10 +18,9 @@ namespace Game
             layout.Space(20);
             var button = layout.Button("Generate Textures", Color.Green);
             button.Button.Clicked += () => Values.ForEach(v => (v as VectorGraphics)?.GenerateTexture());
-
+            // Content.DeleteAsset()
             // TODO: Which file path do I have?
 
-            // TODO: Add editor for the line segments!
             var vectorGraphicsControl = layout.Custom<VectorGraphicsControl>();
             vectorGraphicsControl.CustomControl.SetAnchorPreset(FlaxEngine.GUI.AnchorPresets.HorizontalStretchBottom, false);
             vectorGraphicsControl.CustomControl.Height = Mathf.Max(128, (Values[0] as VectorGraphics)?.Size.Y * 1.5f ?? 128);
