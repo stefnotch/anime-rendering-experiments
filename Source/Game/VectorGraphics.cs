@@ -23,7 +23,7 @@ namespace Game
         public static readonly int NumberOfLayers = 4;
 
         [Serialize]
-        public Int2 Size { get; set; } = new Int2(64, 64);
+        public Vector2 Size { get; set; } = new Vector2(64, 64);
 
         [Serialize]
         public float FadeStrength { get; set; } = 1;
@@ -41,14 +41,14 @@ namespace Game
             try
             {
                 TextureBase.InitData distancesInitData;
-                distancesInitData.Width = Size.X;
-                distancesInitData.Height = Size.Y;
+                distancesInitData.Width = (int)Size.X;
+                distancesInitData.Height = (int)Size.Y;
                 distancesInitData.ArraySize = 1;
                 distancesInitData.Format = PixelFormat.R8G8B8A8_UNorm;
 
                 TextureBase.InitData colorsInitData;
-                colorsInitData.Width = Size.X;
-                colorsInitData.Height = Size.Y;
+                colorsInitData.Width = (int)Size.X;
+                colorsInitData.Height = (int)Size.Y;
                 colorsInitData.ArraySize = 1;
                 colorsInitData.Format = PixelFormat.R8G8B8A8_UNorm;
 
@@ -180,8 +180,8 @@ namespace Game
             // I'm inside the min-distance layer, thus the distance is *negative*
             if (minDistance < float.PositiveInfinity)
             {
-                distances[minLayer] = -minDistance;
-                color = minColor;
+                //distances[minLayer] = -minDistance;
+                //color = minColor;
             }
 
             // Original algorithm idea:

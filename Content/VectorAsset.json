@@ -73,14 +73,14 @@
 				"B": 1.0,
 				"A": 1.0
 			},
-			"LeftFaceLayer": 0,
+			"LeftFaceLayer": 1,
 			"RightColor": {
 				"R": 0.07450981,
 				"G": 0.7647059,
 				"B": 0.0,
 				"A": 1.0
 			},
-			"RightFaceLayer": 1
+			"RightFaceLayer": 0
 		},
 		{
 			"Start": {
@@ -97,14 +97,14 @@
 				"B": 1.0,
 				"A": 1.0
 			},
-			"LeftFaceLayer": 0,
+			"LeftFaceLayer": 1,
 			"RightColor": {
 				"R": 0.07450981,
 				"G": 0.7647059,
 				"B": 0.0,
 				"A": 1.0
 			},
-			"RightFaceLayer": 1
+			"RightFaceLayer": 0
 		},
 		{
 			"Start": {
@@ -121,14 +121,14 @@
 				"B": 1.0,
 				"A": 1.0
 			},
-			"LeftFaceLayer": 0,
+			"LeftFaceLayer": 1,
 			"RightColor": {
 				"R": 0.07450981,
 				"G": 0.7647059,
 				"B": 0.0,
 				"A": 1.0
 			},
-			"RightFaceLayer": 1
+			"RightFaceLayer": 0
 		}
 	]
 }

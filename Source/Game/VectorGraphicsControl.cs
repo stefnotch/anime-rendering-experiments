@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace Game
 {
-    public class VectorGraphicsControl : Control
+    public class VectorGraphicsControl : ContainerControl
     {
         private struct SelectedPoint
         {
@@ -18,16 +18,44 @@ namespace Game
 
         private Vector2 _mousePosition;
         private bool _isDraggingPoints;
+        private bool _isDraggingSurface;
         private readonly List<SelectedPoint> _selectedPoints = new List<SelectedPoint>();
+        private Vector2 _translation = new Vector2(15f, 35f);
+        private float _zoom = 1f;
         private Matrix3x3 _cachedTransform;
         private Matrix3x3 _cachedInverseTransform;
+        private bool _showColors = true;
+        private Color[] _layerColors = new Color[] { Color.Red, Color.Green, Color.Blue, Color.Yellow };
+
+        public VectorGraphicsControl() : base()
+        {
+            var toggleButton = new Button(15, 15, 50, 16) { Text = "Colors" };
+            toggleButton.Clicked += () =>
+            {
+                _showColors = !_showColors;
+                toggleButton.Text = _showColors ? "Colors" : "Layers";
+            };
+
+            AddChild(toggleButton);
+        }
 
         public VectorGraphics VectorGraphics { get; set; }
+
+        public override bool OnMouseWheel(Vector2 location, float delta)
+        {
+            // Don't call the base
+            _mousePosition = location;
+            Matrix3x3.Transform2D(ref location, ref _cachedInverseTransform, out var mousePos);
+            _zoom += delta * 0.1f;
+            // TODO: Zoom in on the mouse position
+            UpdateTransforms();
+            return true;
+        }
 
         public override void OnMouseMove(Vector2 location)
         {
             base.OnMouseMove(location);
-
+            var oldPosition = _mousePosition;
             _mousePosition = location;
 
             if (_isDraggingPoints)
@@ -47,6 +75,14 @@ namespace Game
                     }
                 }
             }
+            else if (_isDraggingSurface)
+            {
+                Matrix3x3.Transform2D(ref oldPosition, ref _cachedInverseTransform, out var oldMousePos);
+                Matrix3x3.Transform2D(ref location, ref _cachedInverseTransform, out var mousePos);
+
+                _translation += mousePos - oldMousePos;
+                UpdateTransforms();
+            }
         }
 
         public override bool OnMouseUp(Vector2 location, MouseButton button)
@@ -54,6 +90,7 @@ namespace Game
             if (button == MouseButton.Left)
             {
                 _isDraggingPoints = false;
+                _isDraggingSurface = false;
             }
             return base.OnMouseUp(location, button);
         }
@@ -64,8 +101,6 @@ namespace Game
 
             if (button == MouseButton.Left)
             {
-                _isDraggingPoints = true;
-
                 Matrix3x3.Transform2D(ref location, ref _cachedInverseTransform, out var mousePos);
 
                 _selectedPoints.Clear();
@@ -86,13 +121,22 @@ namespace Game
                         }
                     }
                 }
+
+                if (_selectedPoints.Count > 0)
+                {
+                    _isDraggingPoints = true;
+                }
+                else
+                {
+                    _isDraggingSurface = true;
+                }
             }
             return true;
         }
 
         private void UpdateTransforms()
         {
-            _cachedTransform = Matrix3x3.Translation2D(new Vector2(15f));
+            _cachedTransform = Matrix3x3.Scaling(_zoom) * Matrix3x3.Translation2D(_translation);
             Matrix3x3.Invert(ref _cachedTransform, out _cachedInverseTransform);
         }
 
@@ -109,9 +153,9 @@ namespace Game
             base.Draw();
             // Outline
             Render2D.DrawRectangle(new Rectangle(new Vector2(10f), Size - 20f), style.BorderSelected);
+            Render2D.PushClip(new Rectangle(new Vector2(10f), Size - 20f));
 
             Render2D.PushTransform(ref _cachedTransform);
-            Render2D.PushClip(new Rectangle(new Vector2(-1), Size - 28f));
 
             Matrix3x3.Transform2D(ref _mousePosition, ref _cachedInverseTransform, out var mousePos);
 
@@ -131,8 +175,10 @@ namespace Game
                     Vector2 leftSide = Vector2.Perpendicular(segment.End - segment.Start);
                     leftSide.Normalize();
                     leftSide *= 2f;
-                    Render2D.DrawRectangle(new Rectangle(Vector2.Lerp(segment.Start, segment.End, 0.5f) + leftSide, Vector2.Zero).MakeExpanded(2f), segment.LeftColor);
-                    Render2D.DrawRectangle(new Rectangle(Vector2.Lerp(segment.Start, segment.End, 0.5f) - leftSide, Vector2.Zero).MakeExpanded(2f), segment.RightColor);
+                    var leftColor = _showColors ? segment.LeftColor : _layerColors[segment.LeftFaceLayer];
+                    var rightColor = _showColors ? segment.RightColor : _layerColors[segment.RightFaceLayer];
+                    Render2D.DrawRectangle(new Rectangle(Vector2.Lerp(segment.Start, segment.End, 0.5f) + leftSide, Vector2.Zero).MakeExpanded(2f), leftColor);
+                    Render2D.DrawRectangle(new Rectangle(Vector2.Lerp(segment.Start, segment.End, 0.5f) - leftSide, Vector2.Zero).MakeExpanded(2f), rightColor);
                     if (IsMouseOver)
                     {
                         if (Vector2.Distance(ref segment.Start, ref mousePos) < 5f)
