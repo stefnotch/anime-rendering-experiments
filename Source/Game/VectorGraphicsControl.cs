@@ -123,6 +123,10 @@ namespace Game
                 {
                     var segment = VectorGraphics.LineSegments[i];
 
+                    if (segment == null) continue;
+
+                    // TODO: Also visualize the layers to prevent dumb mistakes
+
                     Render2D.DrawLine(segment.Start, segment.End, Color.LightGray);
                     Vector2 leftSide = Vector2.Perpendicular(segment.End - segment.Start);
                     leftSide.Normalize();

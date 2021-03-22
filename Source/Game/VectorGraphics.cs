@@ -161,6 +161,8 @@ namespace Game
 
                 byte layer = isRight ? segment.LeftFaceLayer : segment.RightFaceLayer;
 
+                // TODO: Figure out how to deal with those corner cases
+
                 if (distance < distances[layer])
                 {
                     distances[layer] = distance;

@@ -22,7 +22,7 @@ namespace Game
             // TODO: Which file path do I have?
 
             var vectorGraphicsControl = layout.Custom<VectorGraphicsControl>();
-            vectorGraphicsControl.CustomControl.SetAnchorPreset(FlaxEngine.GUI.AnchorPresets.HorizontalStretchBottom, false);
+            //vectorGraphicsControl.CustomControl.SetAnchorPreset(FlaxEngine.GUI.AnchorPresets.StretchAll, false);
             vectorGraphicsControl.CustomControl.Height = Mathf.Max(128, (Values[0] as VectorGraphics)?.Size.Y * 1.5f ?? 128);
             vectorGraphicsControl.CustomControl.VectorGraphics = Values[0] as VectorGraphics;
         }
