@@ -192,21 +192,25 @@ namespace Game
                 distances[i] = layerDistance;
                 if (selectedLayer == i)
                 {
+                    // We're inside the object
                     distances[i] = -layerDistance;
-                }
 
-                if (selectedSegment != null)
-                {
-                    bool isRight = PointLineSide(ref point, ref selectedSegment.Start, ref selectedSegment.End) >= 0;
-                    // byte layer = isRight ? selectedSegment.LeftFaceLayer : selectedSegment.RightFaceLayer;
-                    bool isInside = i == (isRight ? selectedSegment.RightFaceLayer : selectedSegment.LeftFaceLayer);
-
-                    if (isInside)
+                    if (selectedSegment != null)
                     {
-                        //distances[i] = -layerDistance;
+                        // Now we have the closest segment. Our color could either be the right or the left color
+                        // So, check which layer is the correct one (right or left) and pick the color based on that! :5head:
+                        if (selectedSegment.LeftFaceLayer == selectedLayer)
+                        {
+                            color = selectedSegment.LeftColor;
+                        }
+                        else
+                        {
+                            color = selectedSegment.RightColor;
+                        }
                     }
                 }
             }
+
             /*
             // Find the closest distance for every layer
             for (int i = 0; i < LineSegments.Count; i++)
