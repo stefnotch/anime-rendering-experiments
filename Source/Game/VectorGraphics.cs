@@ -141,10 +141,6 @@ namespace Game
         /// <param name="color">The color</param>
         public void CalculateDistancesAtPoint(ref Vector2 point, float[] distances, out Color color)
         {
-            float minDistance = float.PositiveInfinity;
-            byte minLayer = 0;
-            Color minColor = Color.Black;
-
             for (int i = 0; i < distances.Length; i++)
             {
                 distances[i] = float.PositiveInfinity;
@@ -152,11 +148,12 @@ namespace Game
 
             color = Color.Black;
 
+            // Which layer am I in?
             uint pointInLayer = PointInPolygon(LineSegments, ref point);
             byte selectedLayer = InvalidLayer;
             for (int i = 0; i < NumberOfLayers; i++)
             {
-                if ((pointInLayer & (1u << i)) == 1u)
+                if ((pointInLayer & (1u << i)) != 0u)
                 {
                     selectedLayer = (byte)i;
 
@@ -169,11 +166,7 @@ namespace Game
                 }
             }
 
-
-            Color[] _layerColors = new Color[] { Color.Red, Color.Green, Color.Blue, Color.Yellow };
-            color = selectedLayer != InvalidLayer ? _layerColors[selectedLayer] : Color.Black;
-
-            return;
+            // Figure out the closest distances (for the SDF)
             for (int i = 0; i < NumberOfLayers; i++)
             {
                 float layerDistance = float.PositiveInfinity;
