@@ -175,8 +175,8 @@ namespace Game
                     Vector2 leftSide = Vector2.Perpendicular(segment.End - segment.Start);
                     leftSide.Normalize();
                     leftSide *= 2f;
-                    var leftColor = _showColors ? segment.LeftColor : _layerColors[segment.LeftFaceLayer];
-                    var rightColor = _showColors ? segment.RightColor : _layerColors[segment.RightFaceLayer];
+                    var leftColor = _showColors ? segment.LeftColor : (segment.LeftFaceLayer == VectorGraphics.InvalidLayer ? Color.Black : _layerColors[segment.LeftFaceLayer]);
+                    var rightColor = _showColors ? segment.RightColor : (segment.RightFaceLayer == VectorGraphics.InvalidLayer ? Color.Black : _layerColors[segment.RightFaceLayer]);
                     Render2D.DrawRectangle(new Rectangle(Vector2.Lerp(segment.Start, segment.End, 0.5f) + leftSide, Vector2.Zero).MakeExpanded(2f), leftColor);
                     Render2D.DrawRectangle(new Rectangle(Vector2.Lerp(segment.Start, segment.End, 0.5f) - leftSide, Vector2.Zero).MakeExpanded(2f), rightColor);
                     if (IsMouseOver)

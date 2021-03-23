@@ -20,7 +20,9 @@ namespace Game
             public byte RightFaceLayer;
         }
 
-        public static readonly int NumberOfLayers = 4;
+        public static readonly byte NumberOfLayers = 4;
+
+        public static readonly byte InvalidLayer = 255;
 
         [Serialize]
         public Vector2 Size { get; set; } = new Vector2(64, 64);
@@ -150,6 +152,69 @@ namespace Game
 
             color = Color.Black;
 
+            uint pointInLayer = PointInPolygon(LineSegments, ref point);
+            byte selectedLayer = InvalidLayer;
+            for (int i = 0; i < NumberOfLayers; i++)
+            {
+                if ((pointInLayer & (1u << i)) == 1u)
+                {
+                    selectedLayer = (byte)i;
+
+                    if ((pointInLayer & ~(1u << i)) != 0u)
+                    {
+                        // Apparently there is another bit that has been set
+                        Debug.LogWarning("Multiple layer bits have been set");
+                    }
+                    break;
+                }
+            }
+
+
+            Color[] _layerColors = new Color[] { Color.Red, Color.Green, Color.Blue, Color.Yellow };
+            color = selectedLayer != InvalidLayer ? _layerColors[selectedLayer] : Color.Black;
+
+            return;
+            for (int i = 0; i < NumberOfLayers; i++)
+            {
+                float layerDistance = float.PositiveInfinity;
+                LineSegment selectedSegment = null;
+
+                for (int j = 0; j < LineSegments.Count; j++)
+                {
+                    var segment = LineSegments[j];
+                    CollisionsHelper.ClosestPointPointLine(ref point, ref segment.Start, ref segment.End, out Vector2 closestPoint);
+                    float distance = Vector2.Distance(ref point, ref closestPoint);
+
+                    if (segment.LeftFaceLayer == i || segment.RightFaceLayer == i)
+                    {
+                        if (distance < layerDistance)
+                        {
+                            layerDistance = distance;
+                            selectedSegment = segment;
+                            //color = isRight ? segment.LeftColor : segment.RightColor; // TODO: Is this
+                        }
+                    }
+                }
+
+                distances[i] = layerDistance;
+                if (selectedLayer == i)
+                {
+                    distances[i] = -layerDistance;
+                }
+
+                if (selectedSegment != null)
+                {
+                    bool isRight = PointLineSide(ref point, ref selectedSegment.Start, ref selectedSegment.End) >= 0;
+                    // byte layer = isRight ? selectedSegment.LeftFaceLayer : selectedSegment.RightFaceLayer;
+                    bool isInside = i == (isRight ? selectedSegment.RightFaceLayer : selectedSegment.LeftFaceLayer);
+
+                    if (isInside)
+                    {
+                        //distances[i] = -layerDistance;
+                    }
+                }
+            }
+            /*
             // Find the closest distance for every layer
             for (int i = 0; i < LineSegments.Count; i++)
             {
@@ -157,7 +222,7 @@ namespace Game
                 CollisionsHelper.ClosestPointPointLine(ref point, ref segment.Start, ref segment.End, out Vector2 closestPoint);
                 float distance = Vector2.Distance(ref point, ref closestPoint);
 
-                bool isRight = PointLineSide(ref point, ref segment.Start, ref segment.End) >= 0;
+                bool isRight = PointLineSide(ref point, ref segment.Start, ref segment.End) <= 0;
 
                 byte layer = isRight ? segment.LeftFaceLayer : segment.RightFaceLayer;
 
@@ -183,6 +248,8 @@ namespace Game
                 //distances[minLayer] = -minDistance;
                 //color = minColor;
             }
+            */
+
 
             // Original algorithm idea:
             // 1. Find closest line segment
@@ -214,7 +281,7 @@ namespace Game
          * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS 
          * IN THE SOFTWARE. 
          */
-        private bool PointInPolygon(Vector2[] vertices, Vector2 point)
+        /*private bool PointInPolygon(Vector2[] vertices, Vector2 point)
         {
             bool c = false;
             for (int i = 0, j = vertices.Length - 1; i < vertices.Length; j = i++)
@@ -228,12 +295,11 @@ namespace Game
                 }
             }
             return c;
-        }
+        }*/
 
-        /*private bool PointInPolygon(List<LineSegment> segments, Vector2 point)
+        private static uint PointInPolygon(List<LineSegment> segments, ref Vector2 point)
         {
             uint layers = 0;
-            bool c = false;
             for (int i = 0; i < segments.Count; i++)
             {
                 Vector2 start = segments[i].Start;
@@ -243,11 +309,17 @@ namespace Game
                       (point.X < ((start.X - end.X) * (point.Y - end.Y) / (start.Y - end.Y)) + end.X)
                    )
                 {
-                    segments[i].
-                    c = !c;
+                    if (segments[i].RightFaceLayer != InvalidLayer)
+                    {
+                        layers ^= 1u << (segments[i].RightFaceLayer);
+                    }
+                    if (segments[i].LeftFaceLayer != InvalidLayer)
+                    {
+                        layers ^= 1u << (segments[i].LeftFaceLayer);
+                    }
                 }
             }
-            return c;
-        }*/
+            return layers;
+        }
     }
 }

@@ -4,8 +4,8 @@
 	"EngineBuild": 6217,
 	"Data": {
 	"Size": {
-		"X": 64,
-		"Y": 64
+		"X": 64.0,
+		"Y": 64.0
 	},
 	"FadeStrength": 20.0,
 	"FadeShift": 0.5,
@@ -129,6 +129,102 @@
 				"A": 1.0
 			},
 			"RightFaceLayer": 0
+		},
+		{
+			"Start": {
+				"X": 0.0,
+				"Y": 0.0
+			},
+			"End": {
+				"X": 64.0,
+				"Y": 0.0
+			},
+			"LeftColor": {
+				"R": 0.05490196,
+				"G": 0.117647059,
+				"B": 1.0,
+				"A": 1.0
+			},
+			"LeftFaceLayer": 1,
+			"RightColor": {
+				"R": 0.0,
+				"G": 0.0,
+				"B": 0.0,
+				"A": 0.0
+			},
+			"RightFaceLayer": 255
+		},
+		{
+			"Start": {
+				"X": 64.0,
+				"Y": 0.0
+			},
+			"End": {
+				"X": 64.0,
+				"Y": 64.0
+			},
+			"LeftColor": {
+				"R": 0.05490196,
+				"G": 0.117647059,
+				"B": 1.0,
+				"A": 1.0
+			},
+			"LeftFaceLayer": 1,
+			"RightColor": {
+				"R": 0.0,
+				"G": 0.0,
+				"B": 0.0,
+				"A": 0.0
+			},
+			"RightFaceLayer": 255
+		},
+		{
+			"Start": {
+				"X": 64.0,
+				"Y": 64.0
+			},
+			"End": {
+				"X": 0.0,
+				"Y": 64.0
+			},
+			"LeftColor": {
+				"R": 0.05490196,
+				"G": 0.117647059,
+				"B": 1.0,
+				"A": 1.0
+			},
+			"LeftFaceLayer": 1,
+			"RightColor": {
+				"R": 0.0,
+				"G": 0.0,
+				"B": 0.0,
+				"A": 0.0
+			},
+			"RightFaceLayer": 255
+		},
+		{
+			"Start": {
+				"X": 0.0,
+				"Y": 64.0
+			},
+			"End": {
+				"X": 0.0,
+				"Y": 0.0
+			},
+			"LeftColor": {
+				"R": 0.05490196,
+				"G": 0.117647059,
+				"B": 1.0,
+				"A": 1.0
+			},
+			"LeftFaceLayer": 1,
+			"RightColor": {
+				"R": 0.0,
+				"G": 0.0,
+				"B": 0.0,
+				"A": 0.0
+			},
+			"RightFaceLayer": 255
 		}
 	]
 }
