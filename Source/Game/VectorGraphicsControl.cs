@@ -91,6 +91,7 @@ namespace Game
             {
                 _isDraggingPoints = false;
                 _isDraggingSurface = false;
+                EndMouseCapture();
             }
             return base.OnMouseUp(location, button);
         }
@@ -98,6 +99,7 @@ namespace Game
         public override bool OnMouseDown(Vector2 location, MouseButton button)
         {
             if (base.OnMouseDown(location, button)) return true;
+            _mousePosition = location;
 
             if (button == MouseButton.Left)
             {
@@ -125,10 +127,12 @@ namespace Game
                 if (_selectedPoints.Count > 0)
                 {
                     _isDraggingPoints = true;
+                    StartMouseCapture();
                 }
                 else
                 {
                     _isDraggingSurface = true;
+                    StartMouseCapture();
                 }
             }
             return true;
@@ -136,7 +140,7 @@ namespace Game
 
         private void UpdateTransforms()
         {
-            _cachedTransform = Matrix3x3.Scaling(_zoom) * Matrix3x3.Translation2D(_translation);
+            _cachedTransform = Matrix3x3.Scaling(_zoom, _zoom, 1) * Matrix3x3.Translation2D(_translation);
             Matrix3x3.Invert(ref _cachedTransform, out _cachedInverseTransform);
         }
 
@@ -146,11 +150,11 @@ namespace Game
             UpdateTransforms(); // Could be done more efficiently, eh, whatevs
         }
 
-        public override void Draw()
+        public override void DrawSelf()
         {
+            base.DrawSelf();
             var style = Style.Current;
 
-            base.Draw();
             // Outline
             Render2D.DrawRectangle(new Rectangle(new Vector2(10f), Size - 20f), style.BorderSelected);
             Render2D.PushClip(new Rectangle(new Vector2(10f), Size - 20f));
@@ -169,7 +173,6 @@ namespace Game
 
                     if (segment == null) continue;
 
-                    // TODO: Also visualize the layers to prevent dumb mistakes
 
                     Render2D.DrawLine(segment.Start, segment.End, Color.LightGray);
                     Vector2 leftSide = Vector2.Perpendicular(segment.End - segment.Start);
@@ -181,11 +184,11 @@ namespace Game
                     Render2D.DrawRectangle(new Rectangle(Vector2.Lerp(segment.Start, segment.End, 0.5f) - leftSide, Vector2.Zero).MakeExpanded(2f), rightColor);
                     if (IsMouseOver)
                     {
-                        if (Vector2.Distance(ref segment.Start, ref mousePos) < 5f)
+                        if (Vector2.Distance(ref segment.Start, ref mousePos) < 5f / _zoom)
                         {
                             Render2D.FillRectangle(new Rectangle(segment.Start, 0, 0).MakeExpanded(2), Color.White);
                         }
-                        if (Vector2.Distance(ref segment.End, ref mousePos) < 5f)
+                        if (Vector2.Distance(ref segment.End, ref mousePos) < 5f / _zoom)
                         {
                             Render2D.FillRectangle(new Rectangle(segment.End, 0, 0).MakeExpanded(2), Color.White);
                         }
