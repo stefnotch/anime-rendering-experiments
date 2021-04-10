@@ -15,9 +15,11 @@ namespace Game
             Int2 size = new Int2(8, 8);
             for (int i = 0; i < size.X; i++)
             {
-                for (int j = 0; j < size.Y; j++)
+                bool isEven = i % 2 == 0;
+                for (int j = isEven ? 0 : -1; j < size.Y; j++)
                 {
-                    Vector2 position = new Vector2(i - size.X / 2f, j - size.Y / 2f);
+                    Vector2 position = new Vector2(i - size.X / 2f, j + (isEven ? 0 : 0.5f) - size.Y / 2f);
+
                     if (position.Length < size.X / 2f) // Good enough for now
                     {
                         var spline = Actor.AddChild<Spline>();
@@ -26,25 +28,20 @@ namespace Game
                         spline.LocalPosition = new Vector3(position.X * 10f, 0f, position.Y * 10f);
                         _splines.Add(spline);
 
-                        for (int k = 0; k < 10; k++)
+                        for (int k = 0; k < 4; k++)
                         {
-                            spline.AddSplineLocalPoint(new Vector3(0f, -10f * k, 0f));
+                            spline.AddSplineLocalPoint(new Vector3(0f, -40f * k, 0f));
                         }
                         spline.SetTangentsSmooth();
 
                         var splineModel = spline.AddChild<SplineModel>();
                         spline.RemoveStaticFlags(StaticFlags.Transform);
                         splineModel.PreTransform = new Transform(
-                             Vector3.Zero,
+                             new Vector3(0, 0, 300f),
                              Quaternion.RotationX(Mathf.PiOverTwo),
                              new Vector3(0.05f, 1f, 0.05f)
                          );
                         splineModel.Model = SplineModel;
-
-                        var splineChain = spline.AddChild<SplineRopeBody>();
-                        spline.RemoveStaticFlags(StaticFlags.Transform);
-                        splineChain.SubstepTime = 0.1f;
-                        splineChain.GravityScale = 0.3f;
                     }
                 }
             }
