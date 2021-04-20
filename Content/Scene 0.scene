@@ -15,6 +15,11 @@
 				"CompressLightmaps": true,
 				"UseGeometryWithNoMaterials": true,
 				"Quality": 10
+			},
+			"CSG": {
+				"Model": "ad7e18d24e858d7e74c20ca6557154ba",
+				"Data": "c6bd9f4f424dd8c713aac380a0a9db48",
+				"CollisionData": "f1eb80c54e55767b153f128b101b134b"
 			}
 		},
 		{
@@ -63,10 +68,23 @@
 			"TypeName": "FlaxEngine.StaticModel",
 			"ParentID": "9a7c91c24f02b66c8cd059a7a0a426c9",
 			"Name": "Catto",
+			"Transform": {
+				"Translation": {
+					"X": 0.0,
+					"Y": 179.64784240722657,
+					"Z": 0.0
+				}
+			},
 			"StaticFlags": 0,
-			"Model": "dd86c4724bf734c4959d23b3c74faa05",
+			"Model": "91ba9e8a4f6caf6f0c24408c1fbf4e8a",
 			"Buffer": {
 				"Entries": [
+					{
+						"Material": "00000000000000000000000000000000",
+						"ShadowsMode": 3,
+						"Visible": true,
+						"ReceiveDecals": true
+					},
 					{
 						"Material": "00000000000000000000000000000000",
 						"ShadowsMode": 3,
@@ -81,8 +99,9 @@
 			"TypeName": "Game.Tentacles",
 			"ParentID": "775b38074564fde732d57dae259cdbb7",
 			"V": {
-	"SplineModel": "223aa9894e90973780ab508621517526"
-}
+	"SplineModel": "9a32805642aa24aa056f518aaf00ac44"
+},
+			"Enabled": false
 		},
 		{
 			"ID": "1c30797140397713817a07a87003adba",
@@ -91,220 +110,242 @@
 			"Name": "Camera",
 			"Transform": {
 				"Translation": {
-					"X": 0.0,
-					"Y": 150.0,
-					"Z": -300.0
+					"X": 67.4346923828125,
+					"Y": 24.784608840942384,
+					"Z": 209.41212463378907
+				},
+				"Orientation": {
+					"X": -0.022512178868055345,
+					"Y": 0.9742432832717896,
+					"Z": -0.11322136968374253,
+					"W": -0.1937120258808136
 				}
 			}
 		},
 		{
-			"ID": "36e82d554519e3b669de2692a8a2adb9",
-			"TypeName": "FlaxEngine.Spline",
+			"ID": "c271218341ff020faa84b18b964333a1",
+			"TypeName": "FlaxEngine.BoxBrush",
 			"ParentID": "9a7c91c24f02b66c8cd059a7a0a426c9",
-			"Name": "Spline",
-			"StaticFlags": 0,
-			"Curve": {
-				"Keyframes": [
+			"Name": "BoxBrush",
+			"Size": {
+				"X": 500.0,
+				"Y": 100.0,
+				"Z": 800.0
+			},
+			"Surfaces": [
+				{},
+				{},
+				{},
+				{},
+				{},
+				{}
+			]
+		},
+		{
+			"ID": "858a6c7e43242b9a7ee7c4b35662e07a",
+			"TypeName": "FlaxEngine.StaticModel",
+			"ParentID": "9a7c91c24f02b66c8cd059a7a0a426c9",
+			"Name": "CSG.Model",
+			"HideFlags": 4,
+			"Model": "ad7e18d24e858d7e74c20ca6557154ba",
+			"Buffer": {
+				"Entries": [
 					{
-						"Time": 0.0,
-						"Value": {
-							"Translation": {
-								"X": 90.427978515625,
-								"Y": 130.1440887451172,
-								"Z": -311.9312744140625
-							},
-							"Orientation": {
-								"X": 0.0,
-								"Y": -0.1935046911239624,
-								"Z": 0.0,
-								"W": 0.9810993671417236
-							}
-						},
-						"TangentIn": {
-							"Translation": {
-								"X": -479.0983581542969,
-								"Y": 0.0,
-								"Z": 0.0
-							}
-						},
-						"TangentOut": {
-							"Translation": {
-								"X": 311.0983581542969,
-								"Y": 0.0,
-								"Z": 0.0
-							}
-						}
-					},
-					{
-						"Time": 0.8500000238418579,
-						"Value": {
-							"Translation": {
-								"X": 459.5115966796875,
-								"Y": 143.1440887451172,
-								"Z": -319.9312744140625
-							},
-							"Orientation": {
-								"X": 0.0,
-								"Y": -0.1935046911239624,
-								"Z": 0.0,
-								"W": 0.9810993671417236
-							}
-						},
-						"TangentIn": {
-							"Translation": {
-								"X": -280.0655517578125,
-								"Y": -0.0,
-								"Z": -294.55169677734377
-							}
-						},
-						"TangentOut": {
-							"Translation": {
-								"X": 280.0655517578125,
-								"Y": 0.0,
-								"Z": 294.55169677734377
-							}
-						}
-					},
-					{
-						"Time": 1.2750000953674317,
-						"Value": {
-							"Translation": {
-								"X": 459.5115966796875,
-								"Y": 143.1440887451172,
-								"Z": 55.622169494628909
-							},
-							"Orientation": {
-								"X": 0.0,
-								"Y": -0.1935046911239624,
-								"Z": 0.0,
-								"W": 0.9810993671417236
-							}
-						},
-						"TangentIn": {
-							"Translation": {
-								"X": 875.8961181640625,
-								"Y": -112.9614028930664,
-								"Z": -475.71112060546877
-							}
-						},
-						"TangentOut": {
-							"Translation": {
-								"X": -875.8961181640625,
-								"Y": 112.9614028930664,
-								"Z": 475.71112060546877
-							}
-						}
-					},
-					{
-						"Time": 1.7000000476837159,
-						"Value": {
-							"Translation": {
-								"X": -285.0001220703125,
-								"Y": 239.16128540039063,
-								"Z": 84.42318725585938
-							},
-							"Orientation": {
-								"X": 0.17333544790744782,
-								"Y": -0.23082637786865235,
-								"Z": 0.2569809556007385,
-								"W": 0.9222987294197083
-							},
-							"Scale": {
-								"X": 1.0199999809265137,
-								"Y": 0.4700000286102295,
-								"Z": 0.8500000238418579
-							}
-						},
-						"TangentIn": {
-							"Translation": {
-								"X": 1544.019775390625,
-								"Y": -160.02865600585938,
-								"Z": -48.001705169677737
-							}
-						},
-						"TangentOut": {
-							"Translation": {
-								"X": -1544.019775390625,
-								"Y": 160.02865600585938,
-								"Z": 48.001705169677737
-							}
-						}
-					},
-					{
-						"Time": 1.875,
-						"Value": {
-							"Translation": {
-								"X": -466.900146484375,
-								"Y": 239.16128540039063,
-								"Z": 84.42318725585938
-							},
-							"Orientation": {
-								"X": 0.17333544790744782,
-								"Y": -0.23082637786865235,
-								"Z": 0.2569809556007385,
-								"W": 0.9222987294197083
-							},
-							"Scale": {
-								"X": 1.0199999809265137,
-								"Y": 0.4700000286102295,
-								"Z": 0.8500000238418579
-							}
-						},
-						"TangentIn": {
-							"Translation": {
-								"X": 1039.428955078125,
-								"Y": -0.0,
-								"Z": -0.0
-							}
-						},
-						"TangentOut": {
-							"Translation": {
-								"X": -1039.428955078125,
-								"Y": 0.0,
-								"Z": 0.0
-							}
-						}
-					},
-					{
-						"Time": 2.049999952316284,
-						"Value": {
-							"Translation": {
-								"X": -594.4580078125,
-								"Y": -30.789886474609376,
-								"Z": 0.0
-							}
-						},
-						"TangentIn": {},
-						"TangentOut": {}
+						"Material": "00000000000000000000000000000000",
+						"ShadowsMode": 3,
+						"Visible": true,
+						"ReceiveDecals": true
 					}
 				]
 			}
 		},
 		{
-			"ID": "af58abcc495b491f90e3aa987d3d3b05",
-			"TypeName": "FlaxEngine.SplineModel",
-			"ParentID": "36e82d554519e3b669de2692a8a2adb9",
-			"Name": "SplineModel",
-			"StaticFlags": 0,
-			"PreTransform": {
+			"ID": "afd3aad94eeb76ab5a6bfcb353be28f4",
+			"TypeName": "FlaxEngine.MeshCollider",
+			"ParentID": "9a7c91c24f02b66c8cd059a7a0a426c9",
+			"Name": "CSG.Collider",
+			"HideFlags": 4,
+			"CollisionData": "f1eb80c54e55767b153f128b101b134b"
+		},
+		{
+			"ID": "552e87354523202e5f932992dbaead20",
+			"TypeName": "FlaxEngine.EmptyActor",
+			"ParentID": "9a7c91c24f02b66c8cd059a7a0a426c9",
+			"Name": "EmptyActor",
+			"Transform": {
 				"Translation": {
 					"X": 0.0,
-					"Y": 0.0,
-					"Z": 220.0
-				},
-				"Orientation": {
-					"X": 0.7071067690849304,
-					"Y": 0.0,
-					"Z": 0.0,
-					"W": 0.7071067690849304
+					"Y": 250.6700439453125,
+					"Z": 0.0
 				},
 				"Scale": {
-					"X": 100.0,
-					"Y": 100.0,
-					"Z": 100.0
+					"X": 0.10000000149011612,
+					"Y": 0.10000000149011612,
+					"Z": 0.10000000149011612
 				}
 			},
-			"Model": "ddba293941573ad277fe4f824e19dab0",
+			"StaticFlags": 0
+		},
+		{
+			"ID": "e342db894dca2e2ce1807b9f4152a0c2",
+			"TypeName": "Game.Game.IKChain",
+			"ParentID": "552e87354523202e5f932992dbaead20",
+			"V": {
+	"Target": "bfef6def483f232e01adccbe25b366c6",
+	"RootJoint": "9875c76740414f343d42e494e2b72c34"
+}
+		},
+		{
+			"ID": "3e4c6a37446f6066c29f2b98c6f0c802",
+			"TypeName": "FlaxEngine.StaticModel",
+			"ParentID": "552e87354523202e5f932992dbaead20",
+			"Name": "Cube",
+			"Transform": {
+				"Translation": {
+					"X": -1000.0,
+					"Y": 0.0,
+					"Z": 0.0
+				}
+			},
+			"StaticFlags": 0,
+			"Model": "b43f0f8f4aaba3f3156896a5a22ba493",
+			"Buffer": {
+				"Entries": [
+					{
+						"Material": "00000000000000000000000000000000",
+						"ShadowsMode": 3,
+						"Visible": true,
+						"ReceiveDecals": true
+					}
+				]
+			}
+		},
+		{
+			"ID": "9875c76740414f343d42e494e2b72c34",
+			"TypeName": "Game.IKJoint",
+			"ParentID": "3e4c6a37446f6066c29f2b98c6f0c802",
+			"V": {
+	"HingeAxis": {
+		"X": 0.0,
+		"Y": 1.0,
+		"Z": 0.0
+	},
+	"ConstraintAxis": {
+		"X": 1.0,
+		"Y": 0.0,
+		"Z": 0.0
+	},
+	"MaxAngle": 90.0
+}
+		},
+		{
+			"ID": "e66942594aa0648141a19cb82dda5449",
+			"TypeName": "FlaxEngine.StaticModel",
+			"ParentID": "3e4c6a37446f6066c29f2b98c6f0c802",
+			"Name": "Cube 0",
+			"Transform": {
+				"Translation": {
+					"X": -1000.0,
+					"Y": 0.0,
+					"Z": 0.0
+				}
+			},
+			"StaticFlags": 0,
+			"Model": "b43f0f8f4aaba3f3156896a5a22ba493",
+			"Buffer": {
+				"Entries": [
+					{
+						"Material": "00000000000000000000000000000000",
+						"ShadowsMode": 3,
+						"Visible": true,
+						"ReceiveDecals": true
+					}
+				]
+			}
+		},
+		{
+			"ID": "2445984e4f7c7054484364a48128d3cd",
+			"TypeName": "Game.IKJoint",
+			"ParentID": "e66942594aa0648141a19cb82dda5449",
+			"V": {
+	"HingeAxis": {
+		"X": 1.0,
+		"Y": 0.0,
+		"Z": 0.0
+	}
+}
+		},
+		{
+			"ID": "4f91183d474d49e09fe3ccbeeb2496cb",
+			"TypeName": "FlaxEngine.StaticModel",
+			"ParentID": "e66942594aa0648141a19cb82dda5449",
+			"Name": "Cube 1",
+			"Transform": {
+				"Translation": {
+					"X": -1000.0,
+					"Y": 0.0,
+					"Z": 0.0
+				}
+			},
+			"StaticFlags": 0,
+			"Model": "b43f0f8f4aaba3f3156896a5a22ba493",
+			"Buffer": {
+				"Entries": [
+					{
+						"Material": "00000000000000000000000000000000",
+						"ShadowsMode": 3,
+						"Visible": true,
+						"ReceiveDecals": true
+					}
+				]
+			}
+		},
+		{
+			"ID": "75465bac498ad2b7e25dfab8846b79de",
+			"TypeName": "Game.IKJoint",
+			"ParentID": "4f91183d474d49e09fe3ccbeeb2496cb",
+			"V": {},
+			"Enabled": false
+		},
+		{
+			"ID": "2efc74e541a46d7623e98d96beb3addd",
+			"TypeName": "FlaxEngine.StaticModel",
+			"ParentID": "4f91183d474d49e09fe3ccbeeb2496cb",
+			"Name": "Cube 2 - end",
+			"Transform": {
+				"Translation": {
+					"X": -1000.0,
+					"Y": 0.0,
+					"Z": 0.0
+				}
+			},
+			"StaticFlags": 0,
+			"Model": "b43f0f8f4aaba3f3156896a5a22ba493",
+			"Buffer": {
+				"Entries": [
+					{
+						"Material": "00000000000000000000000000000000",
+						"ShadowsMode": 3,
+						"Visible": true,
+						"ReceiveDecals": true
+					}
+				]
+			}
+		},
+		{
+			"ID": "bfef6def483f232e01adccbe25b366c6",
+			"TypeName": "FlaxEngine.StaticModel",
+			"ParentID": "9a7c91c24f02b66c8cd059a7a0a426c9",
+			"Name": "Joint Target",
+			"Transform": {
+				"Translation": {
+					"X": -99.69384765625,
+					"Y": 287.09576416015627,
+					"Z": 489.0752868652344
+				}
+			},
+			"StaticFlags": 0,
+			"Model": "dd86c4724bf734c4959d23b3c74faa05",
 			"Buffer": {
 				"Entries": [
 					{

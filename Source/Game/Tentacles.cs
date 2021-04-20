@@ -12,7 +12,9 @@ namespace Game
 
         public override void OnEnable()
         {
-            Int2 size = new Int2(8, 8);
+            Int2 size = new Int2(1, 1);
+
+            //Int2 size = new Int2(8, 8);
             for (int i = 0; i < size.X; i++)
             {
                 bool isEven = i % 2 == 0;
@@ -23,25 +25,27 @@ namespace Game
                     if (position.Length < size.X / 2f) // Good enough for now
                     {
                         var spline = Actor.AddChild<Spline>();
-                        spline.RemoveStaticFlags(StaticFlags.Transform);
+                        spline.StaticFlags = StaticFlags.None;
                         //spline.HideFlags = HideFlags.FullyHidden;
-                        spline.LocalPosition = new Vector3(position.X * 10f, 0f, position.Y * 10f);
+                        spline.LocalPosition = new Vector3(position.X * 10f, -15f, position.Y * 10f);
                         _splines.Add(spline);
 
-                        for (int k = 0; k < 4; k++)
+                        for (int k = 0; k < 3; k++)
                         {
-                            spline.AddSplineLocalPoint(new Vector3(0f, -40f * k, 0f));
+                            spline.AddSplineLocalPoint(new Vector3(position.X * k * 2.0f, -60f * k, position.Y * k), false);
                         }
                         spline.SetTangentsSmooth();
 
                         var splineModel = spline.AddChild<SplineModel>();
-                        spline.RemoveStaticFlags(StaticFlags.Transform);
+                        spline.StaticFlags = StaticFlags.None;
                         splineModel.PreTransform = new Transform(
                              new Vector3(0, 0, 300f),
                              Quaternion.RotationX(Mathf.PiOverTwo),
-                             new Vector3(0.05f, 1f, 0.05f)
+                             new Vector3(0.04f, 1f, 0.04f)
                          );
                         splineModel.Model = SplineModel;
+
+                        spline.UpdateSpline();
                     }
                 }
             }
@@ -58,7 +62,14 @@ namespace Game
 
         public override void OnUpdate()
         {
-            // Here you can add code that needs to be called every frame
+            // TODO: Conditional raycast
+            if (Physics.RayCast(Actor.Position, Vector3.Down, out var hit, 400f))
+            {
+                for (int i = 0; i < _splines.Count; i++)
+                {
+                    _splines[i].SetSplinePoint(2, hit.Point + new Vector3(i, 0, 0));
+                }
+            }
         }
     }
 }

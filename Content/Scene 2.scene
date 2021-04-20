@@ -1,0 +1,103 @@
+{
+	"ID": "bc1ad6e54584ddfa3a47a984507ef351",
+	"TypeName": "FlaxEngine.SceneAsset",
+	"EngineBuild": 6217,
+	"Data": [
+		{
+			"ID": "bc1ad6e54584ddfa3a47a984507ef351",
+			"TypeName": "FlaxEngine.Scene",
+			"LightmapSettings": {
+				"IndirectLightingIntensity": 1.0,
+				"GlobalObjectsScale": 1.0,
+				"ChartsPadding": 3,
+				"AtlasSize": 1024,
+				"BounceCount": 1,
+				"CompressLightmaps": true,
+				"UseGeometryWithNoMaterials": true,
+				"Quality": 10
+			}
+		},
+		{
+			"ID": "fc273e8143e573de4faf4f8c93a73b12",
+			"TypeName": "FlaxEngine.DirectionalLight",
+			"ParentID": "bc1ad6e54584ddfa3a47a984507ef351",
+			"Name": "Sun",
+			"Transform": {
+				"Translation": {
+					"X": 40.0,
+					"Y": 160.0,
+					"Z": 0.0
+				},
+				"Orientation": {
+					"X": 0.3826834559440613,
+					"Y": 0.0,
+					"Z": 0.0,
+					"W": 0.9238795042037964
+				}
+			}
+		},
+		{
+			"ID": "309caefa45136d03854396809614137d",
+			"TypeName": "FlaxEngine.Sky",
+			"ParentID": "bc1ad6e54584ddfa3a47a984507ef351",
+			"Name": "Sky",
+			"Transform": {
+				"Translation": {
+					"X": 40.0,
+					"Y": 150.0,
+					"Z": 0.0
+				}
+			},
+			"Sun": "fc273e8143e573de4faf4f8c93a73b12"
+		},
+		{
+			"ID": "15819e3d4e68d6c91531e6aa54422a84",
+			"TypeName": "FlaxEngine.Camera",
+			"ParentID": "bc1ad6e54584ddfa3a47a984507ef351",
+			"Name": "Camera",
+			"Transform": {
+				"Translation": {
+					"X": 0.0,
+					"Y": 150.0,
+					"Z": -300.0
+				}
+			}
+		},
+		{
+			"ID": "8da9869b4bdb15c1545a5d8462dcb685",
+			"TypeName": "FlaxEngine.EmptyActor",
+			"ParentID": "bc1ad6e54584ddfa3a47a984507ef351",
+			"Name": "EmptyActor"
+		},
+		{
+			"ID": "ef11a01141f4f10e8cdf1b93c7270404",
+			"TypeName": "Game.ElTesterino",
+			"ParentID": "8da9869b4bdb15c1545a5d8462dcb685",
+			"V": {
+	"InputVec": {
+		"X": 1.0,
+		"Y": -1.0,
+		"Z": 0.0
+	},
+	"ConeVec": {
+		"X": 0.0,
+		"Y": 1.0,
+		"Z": 0.0
+	},
+	"alpha": 45.0,
+	"x": [
+		0,
+		10,
+		50,
+		80,
+		0,
+		0,
+		0,
+		0,
+		7,
+		0
+	]
+}
+		}
+	]
+}
