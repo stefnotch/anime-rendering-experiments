@@ -70,30 +70,6 @@ namespace Game
             clampedToPie /= coneRadius;
 
             return clampedToPie + coneDirection * cutoffDotProduct;
-            //float angle = Mathf.Acos(Mathf.Clamp(vectorDoctProduct, -1f, 1f));
-
-            //if (angle <= maxAngle) return direction;
-
-            //Vector3.Lerp(ref direction, ref coneDirection, angle - maxAngle, out var result);
-            // TODO: Use Slerp (?)
-            // https://keithmaggio.wordpress.com/2011/02/15/math-magician-lerp-slerp-and-nlerp/
-            // https://github.com/toji/gl-matrix/blob/master/src/vec3.js
-            // https://github.com/libgdx/libgdx/blob/49df9bf05f5eb6f335979f402a31ab23e80e5375/gdx/src/com/badlogic/gdx/math/Vector3.java#L572
-            // https://github.com/zalo/MathUtilities/blob/81c65742953b3558b9aee5bc68fe6a5e6ce7e6fa/Assets/Constraints/Constraints.cs#L25
-
-
-
-            /*float sinTotal = Mathf.Sin(angle); // TODO: Not quite correct yet (numerically) (lerp if they're too close? https://github.com/libgdx/libgdx/blob/49df9bf05f5eb6f335979f402a31ab23e80e5375/gdx/src/com/badlogic/gdx/math/Vector3.java#L572)
-            // TODO: How does the clamp01((angle-max)/angle) fit in here?
-            float ratioA = Mathf.Sin(maxAngle) / sinTotal;
-            float ratioB = Mathf.Sin(angle - maxAngle) / sinTotal;
-
-            // TODO: More optimizing and inlining (I might be able to avoid the * directionLength)
-            return new Vector3(
-                (unitDirection.X * ratioA + normalDirection.X * ratioB) * directionLength,
-                (unitDirection.Y * ratioA + normalDirection.Y * ratioB) * directionLength,
-                (unitDirection.Z * ratioA + normalDirection.Z * ratioB) * directionLength
-                );*/
         }
 
         public struct IKJoint
