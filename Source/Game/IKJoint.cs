@@ -28,6 +28,9 @@ namespace Game
         private Actor _jointTip;
         private IKJoint[] _childJoints;
 
+        public IKJoint FirstChild => _childJoints?.Length > 0 ? _childJoints[0] : null;
+        public Actor JointTip => _jointTip;
+
         public override void OnEnable()
         {
             var childJoints = new List<IKJoint>();
@@ -101,11 +104,7 @@ namespace Game
                 transform.Orientation = constraintRotation * transform.Orientation;
             }
 
-            // TODO: Axis clamping
-            // Huh https://github.com/zalo/MathUtilities/blob/81c65742953b3558b9aee5bc68fe6a5e6ce7e6fa/Assets/Constraints/Constraints.cs#L25
-
             Transform = transform;
-
         }
     }
 }

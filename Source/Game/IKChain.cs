@@ -5,7 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Game.Game
+namespace Game
 {
     public class IKChain : Script
     {

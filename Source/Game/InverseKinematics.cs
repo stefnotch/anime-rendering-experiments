@@ -54,8 +54,7 @@ namespace Game
             if (maxAngle <= 0) return coneDirection * direction.Length;
             if (maxAngle >= Mathf.Pi) return direction;
 
-            Vector3 unitDirection = direction.Normalized;
-            float directionLength = direction.Length;
+            Vector3 unitDirection = direction.Normalized; // normalizing can sometimes be avoided (just pass in a normalized direction)
 
             float cutoffDotProduct = Mathf.Cos(maxAngle); // could be precomputed
             float coneRadius = Mathf.Sin(maxAngle); // could be precomputed
@@ -63,8 +62,7 @@ namespace Game
             float vectorDotProduct = Vector3.Dot(ref unitDirection, ref coneDirection);
             if (vectorDotProduct >= cutoffDotProduct) return direction;
 
-            // TODO: Handle the case with two opposite vectors
-
+            // Note: The case with the direction vector being the exact opposite of the coneDirection might need extra handling
             Vector3 clampedToPie = direction - coneDirection * vectorDotProduct;
             clampedToPie.Normalize();
             clampedToPie /= coneRadius;
