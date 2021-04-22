@@ -7,6 +7,9 @@ using System.Threading.Tasks;
 
 namespace Game
 {
+    // Some references:
+    // https://zalo.github.io/blog/inverse-kinematics/
+    // https://github.com/zalo/MathUtilities/blob/master/Assets/IK/CCDIK/CCDIKJoint.cs#L10
     public class InverseKinematics
     {
         // Terrible name, suggest better one plez:
