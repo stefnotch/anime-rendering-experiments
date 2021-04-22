@@ -10,6 +10,8 @@ namespace Game
 
         private List<Spline> _splines = new List<Spline>();
         private List<IKJoint> _rootJoints = new List<IKJoint>();
+        private List<Actor> _jointTips = new List<Actor>();
+        private List<Vector3> _targetPositions = new List<Vector3>();
 
         public override void OnEnable()
         {
@@ -53,7 +55,7 @@ namespace Game
                         ikJoint.Actor.LocalPosition = new Vector3(position.X * 10f, -15f, position.Y * 10f);
                         ikJoint.Enabled = false;
                         ikJoint.ClampToCone = true;
-                        ikJoint.ConstraintAxis = Vector3.Backward; // TODO: Move a bit to the outside
+                        ikJoint.ConstraintAxis = Vector3.Down; // TODO: Move a bit to the outside
                         ikJoint.MaxAngle = 45;
 
                         var secondIkJoint = ikJoint.Actor.AddChild<EmptyActor>().AddScript<IKJoint>();
@@ -61,12 +63,14 @@ namespace Game
                         secondIkJoint.Actor.LocalPosition = new Vector3(position.X * 2.0f, -60f, position.Y);
                         secondIkJoint.Enabled = false;
                         secondIkJoint.ClampToCone = true;
-                        secondIkJoint.ConstraintAxis = Vector3.Backward; // TODO: Move a bit to the outside
+                        secondIkJoint.ConstraintAxis = Vector3.Down; // TODO: Move a bit to the outside
                         secondIkJoint.MaxAngle = 45;
 
                         var ikTip = secondIkJoint.Actor.AddChild<EmptyActor>();
                         ikTip.StaticFlags = StaticFlags.None;
                         ikTip.LocalPosition = new Vector3(position.X * 2.0f, -60f, position.Y);
+
+                        _targetPositions.Add(ikTip.Position);
 
                         // TODO: Improve this (the enable dance)
                         Scripting.InvokeOnUpdate(() =>
@@ -76,6 +80,7 @@ namespace Game
                         });
 
                         _rootJoints.Add(ikJoint);
+                        _jointTips.Add(ikTip);
                     }
                 }
             }
@@ -88,25 +93,32 @@ namespace Game
             Actor.DestroyChildren();
         }
 
-        public override void OnUpdate()
+        public override void OnFixedUpdate()
         {
             // TODO: Conditional raycast
-            if (Physics.RayCast(Actor.Position, Vector3.Down, out var hit, 400f, layerMask: ~(1U << 1)))
+            /* if (Physics.RayCast(Actor.Position, Vector3.Down, out var hit, 400f, layerMask: ~(1U << 1)))
+             {
+                 Vector3 derpTarget = hit.Point;
+
+
+             }*/
+
+            for (int i = 0; i < _rootJoints.Count; i++)
             {
-                Vector3 derpTarget = hit.Point;
+                Vector3 target = _targetPositions[i];
 
-                for (int i = 0; i < _rootJoints.Count; i++)
-                {
-                    _rootJoints[i].Evaluate(ref derpTarget);
-                }
+                _rootJoints[i].Evaluate(_jointTips[i], ref target);
             }
+        }
 
+        public override void OnUpdate()
+        {
             // Update the splines
             for (int i = 0; i < _rootJoints.Count; i++)
             {
                 _splines[i].SetSplinePoint(0, _rootJoints[i].Actor.Position, false);
-                _splines[i].SetSplinePoint(1, _rootJoints[i].FirstChild.Actor.Position, false);
-                _splines[i].SetSplinePoint(2, _rootJoints[i].FirstChild.JointTip.Position, false);
+                _splines[i].SetSplinePoint(1, _rootJoints[i].ChildJoint.Actor.Position, false);
+                _splines[i].SetSplinePoint(2, _jointTips[i].Position, false);
 
                 _splines[i].UpdateSpline();
             }

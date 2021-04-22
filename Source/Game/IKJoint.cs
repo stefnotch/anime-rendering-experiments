@@ -25,25 +25,22 @@ namespace Game
         [VisibleIf(nameof(ClampToCone))]
         public float MaxAngle = 180; // TODO: Custom degree editor?
 
-        private Actor _jointTip;
-        private IKJoint[] _childJoints;
 
-        public IKJoint FirstChild => _childJoints?.Length > 0 ? _childJoints[0] : null;
-        public Actor JointTip => _jointTip;
+        private IKJoint _childJoint;
+
+        public IKJoint ChildJoint => _childJoint;
 
         public override void OnEnable()
         {
-            var childJoints = new List<IKJoint>();
+            // TODO: Child should register & unregister itself
+            // TODO: Update the docs to reflect on that
             for (int i = 0; i < Actor.ChildrenCount; i++)
             {
-                if (Actor.GetChild(i).TryGetScript<IKJoint>(out var childJoint))
+                if (Actor.GetChild(i).TryGetScript<IKJoint>(out _childJoint))
                 {
-                    childJoints.Add(childJoint);
+                    break;
                 }
             }
-            _childJoints = childJoints.ToArray();
-
-            _jointTip = _childJoints.Length > 0 ? _childJoints[0].Actor : (Actor.ChildrenCount > 0 ? Actor.GetChild(0) : null);
 
             HingeAxis.Normalize();
             ConstraintAxis.Normalize();
@@ -51,8 +48,7 @@ namespace Game
 
         public override void OnDisable()
         {
-            _jointTip = null;
-            _childJoints = null;
+            _childJoint = null;
         }
 
         public override void OnDebugDrawSelected()
@@ -65,46 +61,42 @@ namespace Game
             }
         }
 
-        public void Evaluate(ref Vector3 target)
+        public void Evaluate(Actor jointTip, ref Vector3 target)
         {
-            // TODO: Make smoooother
+            if (!Enabled) return;
 
-            if (!_jointTip) return;
-            for (int i = 0; i < _childJoints.Length; i++)
-            {
-                _childJoints[i].Evaluate(ref target);
-            }
+            _childJoint?.Evaluate(jointTip, ref target);
 
-            var transform = Transform;
-
-            Vector3 directionToTip = _jointTip.Transform.Translation - transform.Translation;
-            Vector3 directionToTarget = target - transform.Translation;
+            Vector3 directionToTip = jointTip.Transform.Translation - Transform.Translation;
+            Vector3 directionToTarget = target - Transform.Translation;
 
             directionToTip.Normalize();
             directionToTarget.Normalize();
             Quaternion jointRotation = InverseKinematics.FromVectors(ref directionToTip, ref directionToTarget);
-            transform.Orientation = jointRotation * transform.Orientation;
+            Quaternion orientation = jointRotation * Transform.Orientation;
+
+            // TODO: Lerp
 
             if (IsHinge)
             {
-                Vector3 currentHingeAxis = HingeAxis * transform.Orientation;
+                Vector3 currentHingeAxis = HingeAxis * orientation;
                 Vector3 targetHingeAxis = HingeAxis * Actor.Parent.Orientation;
 
                 Quaternion hingeRotation = InverseKinematics.FromVectors(ref currentHingeAxis, ref targetHingeAxis);
-                transform.Orientation = hingeRotation * transform.Orientation;
+                orientation = hingeRotation * orientation;
             }
 
             if (ClampToCone)
             {
-                Vector3 currentConstraintAxis = ConstraintAxis * transform.Orientation;
+                Vector3 currentConstraintAxis = ConstraintAxis * orientation;
                 Vector3 parentConstraintAxis = ConstraintAxis * Actor.Parent.Orientation;
-                Vector3 constrainedConstraintAxis = InverseKinematics.ConstrainToCone(ref currentConstraintAxis, ref parentConstraintAxis, MaxAngle * Mathf.DegreesToRadians);
+                Vector3 constrainedConstraintAxis = InverseKinematics.ConstrainToConeUsingSlerp(ref currentConstraintAxis, ref parentConstraintAxis, MaxAngle * Mathf.DegreesToRadians);
                 Quaternion constraintRotation = InverseKinematics.FromVectors(ref currentConstraintAxis, ref constrainedConstraintAxis);
 
-                transform.Orientation = constraintRotation * transform.Orientation;
+                orientation = constraintRotation * orientation;
             }
 
-            Transform = transform;
+            Actor.Orientation = orientation;
         }
     }
 }

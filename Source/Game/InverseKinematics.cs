@@ -1,4 +1,4 @@
-﻿using FlaxEngine;
+using FlaxEngine;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -59,6 +59,7 @@ namespace Game
             float cutoffDotProduct = Mathf.Cos(maxAngle); // could be precomputed
             float coneRadius = Mathf.Sin(maxAngle); // could be precomputed
 
+            // Oooooo, it gets stuck at that point. So that's why he intellicatly rotated it instead...
             float vectorDotProduct = Vector3.Dot(ref unitDirection, ref coneDirection);
             if (vectorDotProduct >= cutoffDotProduct) return direction;
 
@@ -67,7 +68,31 @@ namespace Game
             clampedToPie.Normalize();
             clampedToPie /= coneRadius;
 
-            return clampedToPie + coneDirection * cutoffDotProduct;
+            return clampedToPie + coneDirection * cutoffDotProduct + coneDirection * 0.01f; // (coneDirection * 0.01f) stupid hack to make it non-stuck-y
+        }
+
+        public static Vector3 ConstrainToConeUsingSlerp(ref Vector3 direction, ref Vector3 coneDirection, float maxAngle)
+        {
+            if (maxAngle <= 0) return coneDirection * direction.Length;
+            if (maxAngle >= Mathf.Pi) return direction;
+
+            Vector3 unitDirection = direction.Normalized; // normalizing can sometimes be avoided (just pass in a normalized direction)
+
+            float cutoffDotProduct = Mathf.Cos(maxAngle); // could be precomputed
+            float coneRadius = Mathf.Sin(maxAngle); // could be precomputed
+
+            float dotProduct = Vector3.Dot(ref unitDirection, ref coneDirection);
+
+            float angleDelta = Mathf.Acos(Mathf.Saturate(dotProduct)) - maxAngle;
+            if (angleDelta <= 0) return direction;
+
+            // https://keithmaggio.wordpress.com/2011/02/15/math-magician-lerp-slerp-and-nlerp/
+            // https://observablehq.com/@spattana/slerp-spherical-linear-interpolation?ui=next
+            // TODO: Understand this part
+            Vector3 RelativeVec = coneDirection - direction * dotProduct;
+            RelativeVec.Normalize();
+
+            return (direction * Mathf.Cos(angleDelta)) + (RelativeVec * Mathf.Sin(angleDelta));
         }
 
         public struct IKJoint

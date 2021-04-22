@@ -30,14 +30,14 @@
 			"Transform": {
 				"Translation": {
 					"X": 40.0,
-					"Y": 160.0,
+					"Y": 1000.0,
 					"Z": 0.0
 				},
 				"Orientation": {
-					"X": 0.3826834559440613,
-					"Y": 0.0,
-					"Z": 0.0,
-					"W": 0.9238795042037964
+					"X": 0.058762796223163608,
+					"Y": -0.6605774760246277,
+					"Z": 0.051988765597343448,
+					"W": 0.7466468214988709
 				}
 			}
 		},
@@ -64,55 +64,15 @@
 			"CustomTexture": "c54410104ff39427bc11e5bc761d66b0"
 		},
 		{
-			"ID": "775b38074564fde732d57dae259cdbb7",
-			"TypeName": "FlaxEngine.StaticModel",
-			"ParentID": "9a7c91c24f02b66c8cd059a7a0a426c9",
-			"Name": "Catto",
-			"Transform": {
-				"Translation": {
-					"X": 0.0,
-					"Y": 179.64784240722657,
-					"Z": 0.0
-				}
-			},
-			"StaticFlags": 0,
-			"Model": "91ba9e8a4f6caf6f0c24408c1fbf4e8a",
-			"Buffer": {
-				"Entries": [
-					{
-						"Material": "00000000000000000000000000000000",
-						"ShadowsMode": 3,
-						"Visible": true,
-						"ReceiveDecals": true
-					},
-					{
-						"Material": "00000000000000000000000000000000",
-						"ShadowsMode": 3,
-						"Visible": true,
-						"ReceiveDecals": true
-					}
-				]
-			}
-		},
-		{
-			"ID": "03f3e3ff4da63965331aab92eea7a8b2",
-			"TypeName": "Game.Tentacles",
-			"ParentID": "775b38074564fde732d57dae259cdbb7",
-			"V": {
-	"SplineModel": "9a32805642aa24aa056f518aaf00ac44"
-},
-			"Enabled": false
-		},
-		{
 			"ID": "1c30797140397713817a07a87003adba",
 			"TypeName": "FlaxEngine.Camera",
 			"ParentID": "9a7c91c24f02b66c8cd059a7a0a426c9",
-			"Name": "Camera",
+			"Name": "Scene Camera",
 			"Transform": {
 				"Translation": {
-					"X": 67.4346923828125,
-					"Y": 24.784608840942384,
-					"Z": 209.41212463378907
+					"X": 247.58251953125,
+					"Y": 184.14608764648438,
+					"Z": 326.115966796875
 				},
 				"Orientation": {
 					"X": -0.022512178868055345,
@@ -120,7 +80,28 @@
 					"Z": -0.11322136968374253,
 					"W": -0.1937120258808136
 				}
-			}
+			},
+			"StaticFlags": 0
+		},
+		{
+			"ID": "b37fdceb4b6fad88d44b509077911dd6",
+			"TypeName": "FlaxEngine.Camera",
+			"ParentID": "9a7c91c24f02b66c8cd059a7a0a426c9",
+			"Name": "First Person Camera",
+			"Transform": {
+				"Translation": {
+					"X": 247.58251953125,
+					"Y": 184.14608764648438,
+					"Z": 326.115966796875
+				},
+				"Orientation": {
+					"X": -0.022512178868055345,
+					"Y": 0.9742432832717896,
+					"Z": -0.11322136968374253,
+					"W": -0.1937120258808136
+				}
+			},
+			"StaticFlags": 0
 		},
 		{
 			"ID": "c271218341ff020faa84b18b964333a1",
@@ -171,6 +152,7 @@
 			"ID": "552e87354523202e5f932992dbaead20",
 			"TypeName": "FlaxEngine.EmptyActor",
 			"ParentID": "9a7c91c24f02b66c8cd059a7a0a426c9",
+			"IsActive": false,
 			"Name": "EmptyActor",
 			"Transform": {
 				"Translation": {
@@ -187,12 +169,13 @@
 			"StaticFlags": 0
 		},
 		{
-			"ID": "e342db894dca2e2ce1807b9f4152a0c2",
-			"TypeName": "Game.Game.IKChain",
+			"ID": "cb73019949525f743f526f8d05fd477a",
+			"TypeName": "Game.IKChain",
 			"ParentID": "552e87354523202e5f932992dbaead20",
 			"V": {
 	"Target": "bfef6def483f232e01adccbe25b366c6",
-	"RootJoint": "9875c76740414f343d42e494e2b72c34"
+	"RootJoint": "9875c76740414f343d42e494e2b72c34",
+	"EndJoint": "2efc74e541a46d7623e98d96beb3addd"
 }
 		},
 		{
@@ -225,17 +208,19 @@
 			"TypeName": "Game.IKJoint",
 			"ParentID": "3e4c6a37446f6066c29f2b98c6f0c802",
 			"V": {
+	"IsHinge": true,
 	"HingeAxis": {
 		"X": 0.0,
 		"Y": 1.0,
 		"Z": 0.0
 	},
+	"ClampToCone": true,
 	"ConstraintAxis": {
 		"X": 1.0,
 		"Y": 0.0,
 		"Z": 0.0
 	},
-	"MaxAngle": 90.0
+	"MaxAngle": 45.0
 }
 		},
 		{
@@ -336,12 +321,13 @@
 			"ID": "bfef6def483f232e01adccbe25b366c6",
 			"TypeName": "FlaxEngine.StaticModel",
 			"ParentID": "9a7c91c24f02b66c8cd059a7a0a426c9",
+			"IsActive": false,
 			"Name": "Joint Target",
 			"Transform": {
 				"Translation": {
-					"X": -99.69384765625,
+					"X": -186.74932861328126,
 					"Y": 287.09576416015627,
-					"Z": 489.0752868652344
+					"Z": 305.2351379394531
 				}
 			},
 			"StaticFlags": 0,
@@ -356,6 +342,74 @@
 					}
 				]
 			}
+		},
+		{
+			"ID": "ac56e07046e00a9dcad450b800c47ba5",
+			"TypeName": "FlaxEngine.CharacterController",
+			"ParentID": "9a7c91c24f02b66c8cd059a7a0a426c9",
+			"Name": "CharacterController",
+			"Transform": {
+				"Translation": {
+					"X": 0.0,
+					"Y": 112.68032836914063,
+					"Z": 0.0
+				}
+			},
+			"StaticFlags": 0,
+			"Layer": 1,
+			"StepOffset": 40.0,
+			"SlopeLimit": 60.0,
+			"Height": 50.0
+		},
+		{
+			"ID": "38fc11074fbfc8651028f7bd4b47347e",
+			"TypeName": "Game.PlayerScript",
+			"ParentID": "ac56e07046e00a9dcad450b800c47ba5",
+			"V": {
+	"PlayerController": "ac56e07046e00a9dcad450b800c47ba5",
+	"CameraTarget": "ac56e07046e00a9dcad450b800c47ba5",
+	"Camera": "b37fdceb4b6fad88d44b509077911dd6"
+}
+		},
+		{
+			"ID": "775b38074564fde732d57dae259cdbb7",
+			"TypeName": "FlaxEngine.StaticModel",
+			"ParentID": "ac56e07046e00a9dcad450b800c47ba5",
+			"Name": "Catto",
+			"Transform": {
+				"Translation": {
+					"X": 0.0,
+					"Y": 40.0,
+					"Z": 0.0
+				}
+			},
+			"StaticFlags": 0,
+			"Layer": 1,
+			"Model": "91ba9e8a4f6caf6f0c24408c1fbf4e8a",
+			"Buffer": {
+				"Entries": [
+					{
+						"Material": "00000000000000000000000000000000",
+						"ShadowsMode": 3,
+						"Visible": true,
+						"ReceiveDecals": true
+					},
+					{
+						"Material": "00000000000000000000000000000000",
+						"ShadowsMode": 3,
+						"Visible": true,
+						"ReceiveDecals": true
+					}
+				]
+			}
+		},
+		{
+			"ID": "03f3e3ff4da63965331aab92eea7a8b2",
+			"TypeName": "Game.Tentacles",
+			"ParentID": "775b38074564fde732d57dae259cdbb7",
+			"V": {
+	"SplineModel": "9a32805642aa24aa056f518aaf00ac44"
+}
 		}
 	]
 }
