@@ -71,28 +71,35 @@ namespace Game
             return clampedToPie + coneDirection * cutoffDotProduct + coneDirection * 0.01f; // (coneDirection * 0.01f) stupid hack to make it non-stuck-y
         }
 
-        public static Vector3 ConstrainToConeUsingSlerp(ref Vector3 direction, ref Vector3 coneDirection, float maxAngle)
+        public static Vector3 ConstrainToConeUsingSlerp(ref Vector3 unitDirection, ref Vector3 coneDirection, float maxAngle)
         {
-            if (maxAngle <= 0) return coneDirection * direction.Length;
-            if (maxAngle >= Mathf.Pi) return direction;
+            if (maxAngle <= 0) return coneDirection;
+            if (maxAngle >= Mathf.Pi) return unitDirection;
 
-            Vector3 unitDirection = direction.Normalized; // normalizing can sometimes be avoided (just pass in a normalized direction)
+            // doesn't work very well if the two vectors have a ~180 degree angle, but that shouldn't happen anyways
 
             float cutoffDotProduct = Mathf.Cos(maxAngle); // could be precomputed
             float coneRadius = Mathf.Sin(maxAngle); // could be precomputed
 
             float dotProduct = Vector3.Dot(ref unitDirection, ref coneDirection);
 
-            float angleDelta = Mathf.Acos(Mathf.Saturate(dotProduct)) - maxAngle;
-            if (angleDelta <= 0) return direction;
+            float angleDelta = Mathf.Acos(Mathf.Clamp(dotProduct, -1, 1)) - maxAngle;
+            if (angleDelta <= 0) return unitDirection;
 
             // https://keithmaggio.wordpress.com/2011/02/15/math-magician-lerp-slerp-and-nlerp/
             // https://observablehq.com/@spattana/slerp-spherical-linear-interpolation?ui=next
-            // TODO: Understand this part
-            Vector3 RelativeVec = coneDirection - direction * dotProduct;
-            RelativeVec.Normalize();
 
-            return (direction * Mathf.Cos(angleDelta)) + (RelativeVec * Mathf.Sin(angleDelta));
+            // Gets a vector that is perpendicular to the unitDirection
+            // (It takes the end vector and removes the part that is parallel to the unitDirection)
+            // https://i.stack.imgur.com/tm3Tx.png
+            Vector3 perpendicularVector = coneDirection - unitDirection * dotProduct;
+            perpendicularVector.Normalize();
+
+            // The "- maxAngle" part guarantees that the dot products aren't the same
+            //Debug.Log("cos " + Mathf.Cos(angleDelta) + "     " + dotProduct + "      " + (1 - dotProduct));
+            //Debug.Log("sin " + Mathf.Sin(angleDelta) + "     " + Vector3.Dot(ref perpendicularVector, ref coneDirection));
+
+            return (unitDirection * Mathf.Cos(angleDelta)) + (perpendicularVector * Mathf.Sin(angleDelta));
         }
 
         public struct IKJoint

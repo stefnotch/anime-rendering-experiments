@@ -325,9 +325,9 @@
 			"Name": "Joint Target",
 			"Transform": {
 				"Translation": {
-					"X": -186.74932861328126,
+					"X": -476.60467529296877,
 					"Y": 287.09576416015627,
-					"Z": 305.2351379394531
+					"Z": 152.8979949951172
 				}
 			},
 			"StaticFlags": 0,
@@ -351,7 +351,7 @@
 			"Transform": {
 				"Translation": {
 					"X": 0.0,
-					"Y": 112.68032836914063,
+					"Y": 138.77532958984376,
 					"Z": 0.0
 				}
 			},
@@ -359,7 +359,7 @@
 			"Layer": 1,
 			"StepOffset": 40.0,
 			"SlopeLimit": 60.0,
-			"Height": 50.0
+			"Height": 75.0
 		},
 		{
 			"ID": "38fc11074fbfc8651028f7bd4b47347e",
@@ -368,7 +368,9 @@
 			"V": {
 	"PlayerController": "ac56e07046e00a9dcad450b800c47ba5",
 	"CameraTarget": "ac56e07046e00a9dcad450b800c47ba5",
-	"Camera": "b37fdceb4b6fad88d44b509077911dd6"
+	"Camera": "b37fdceb4b6fad88d44b509077911dd6",
+	"GroundAccelerate": 1000.0,
+	"AirAccelerate": 1000.0
 }
 		},
 		{
@@ -379,7 +381,7 @@
 			"Transform": {
 				"Translation": {
 					"X": 0.0,
-					"Y": 40.0,
+					"Y": 55.0,
 					"Z": 0.0
 				}
 			},
@@ -404,11 +406,25 @@
 			}
 		},
 		{
-			"ID": "03f3e3ff4da63965331aab92eea7a8b2",
+			"ID": "8e0e0227477d1d75c6c124ac08964a7c",
+			"TypeName": "FlaxEngine.EmptyActor",
+			"ParentID": "ac56e07046e00a9dcad450b800c47ba5",
+			"Name": "Tencles",
+			"Transform": {
+				"Translation": {
+					"X": 0.0,
+					"Y": 15.0,
+					"Z": 0.0
+				}
+			}
+		},
+		{
+			"ID": "408d9d8545e4f77d8ad208971ad7fdc2",
 			"TypeName": "Game.Tentacles",
-			"ParentID": "775b38074564fde732d57dae259cdbb7",
+			"ParentID": "8e0e0227477d1d75c6c124ac08964a7c",
 			"V": {
-	"SplineModel": "9a32805642aa24aa056f518aaf00ac44"
+	"SplineModel": "9a32805642aa24aa056f518aaf00ac44",
+	"ReachRadius": 150.0
 }
 		}
 	]
