@@ -15,4 +15,9 @@
   - https://iquilezles.org/www/articles/distfunctions2d/distfunctions2d.htm
   - https://www.iquilezles.org/www/articles/interiordistance/interiordistance.htm
   - https://www.shadertoy.com/view/3t33WH
-  - 
+
+
+## Tentacle Cat
+- [Procedural animation](https://www.youtube.com/watch?v=e6Gjhr1IP6w)
+- Inverse Kinematics with [Quaternion Cyclic Coordinate Descent](https://zalo.github.io/blog/inverse-kinematics/)
+- Investigate [inverse dynamics](https://medium.com/unity3danimation/create-your-own-inverse-dynamics-in-unity-1ed0371ee658)
