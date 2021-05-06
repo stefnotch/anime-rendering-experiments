@@ -209,27 +209,31 @@ namespace Game
                         ikJoint.ConstraintAxis = Vector3.Down; // TODO: Move a bit to the outside
                         ikJoint.MaxAngle = 100;
 
-                        var secondIkJoint = ikJoint.Actor.AddChild<EmptyActor>().AddScript<IKJoint>();
-                        secondIkJoint.Enabled = false;
-                        secondIkJoint.Actor.StaticFlags = StaticFlags.None;
-                        secondIkJoint.Actor.LocalPosition = new Vector3(position.X * 2.0f, -segmentLength, position.Y);
-                        secondIkJoint.ClampToCone = true;
-                        secondIkJoint.ConstraintAxis = Vector3.Down; // TODO: Move a bit to the outside
-                        secondIkJoint.MaxAngle = 100;
+                        var rootIkJoint = ikJoint;
 
-                        var ikTip = secondIkJoint.Actor.AddChild<EmptyActor>();
+                        Scripting.InvokeOnUpdate(() => rootIkJoint.Enabled = true);
+
+                        for (int k = 1; k < numberOfSegments - 1; k++)
+                        {
+                            var childIkJoint = ikJoint.Actor.AddChild<EmptyActor>().AddScript<IKJoint>();
+                            childIkJoint.Enabled = false;
+                            childIkJoint.Actor.StaticFlags = StaticFlags.None;
+                            childIkJoint.Actor.LocalPosition = new Vector3(position.X * 2.0f, -segmentLength, position.Y);
+                            childIkJoint.ClampToCone = true;
+                            childIkJoint.ConstraintAxis = Vector3.Down; // TODO: Move a bit to the outside
+                            childIkJoint.MaxAngle = 100;
+                            ikJoint = childIkJoint;
+
+                            Scripting.InvokeOnUpdate(() => childIkJoint.Enabled = true);
+                        }
+
+                        var ikTip = ikJoint.Actor.AddChild<EmptyActor>();
                         ikTip.StaticFlags = StaticFlags.None;
                         ikTip.LocalPosition = new Vector3(position.X * 2.0f, -segmentLength, position.Y);
 
-                        Scripting.InvokeOnUpdate(() =>
-                        {
-                            ikJoint.Enabled = true;
-                            secondIkJoint.Enabled = true;
-                        });
-
                         var targetDirection = new Vector3(position.X * 2f, -15f, position.Y * 2f).Normalized;
 
-                        _tentacles.Add(new Tentacle(this, spline, ikJoint, ikTip, ikTip.Position, targetDirection));
+                        _tentacles.Add(new Tentacle(this, spline, rootIkJoint, ikTip, ikTip.Position, targetDirection));
                     }
                 }
             }
