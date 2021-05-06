@@ -53,7 +53,7 @@ namespace Game
 
                 // Mouse
                 Vector2 mouseDelta = new Vector2(Input.GetAxis("Mouse X"), Input.GetAxis("Mouse Y"));
-                _pitch = Mathf.Clamp(_pitch + mouseDelta.Y, -88, 88);
+                _pitch = Mathf.Clamp(_pitch + mouseDelta.Y * 0.5f, -88, 88);
                 _yaw += mouseDelta.X;
             }
 
