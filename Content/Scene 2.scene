@@ -70,34 +70,10 @@
 			"Name": "EmptyActor"
 		},
 		{
-			"ID": "ef11a01141f4f10e8cdf1b93c7270404",
-			"TypeName": "Game.ElTesterino",
+			"ID": "af76fd0344a29a5626a1699bc82f79ca",
+			"TypeName": "5d2df3874b551df27c84d68b13c973b2",
 			"ParentID": "8da9869b4bdb15c1545a5d8462dcb685",
-			"V": {
-	"InputVec": {
-		"X": 1.0,
-		"Y": -1.0,
-		"Z": 0.0
-	},
-	"ConeVec": {
-		"X": 0.0,
-		"Y": 1.0,
-		"Z": 0.0
-	},
-	"alpha": 45.0,
-	"x": [
-		0,
-		10,
-		50,
-		80,
-		0,
-		0,
-		0,
-		0,
-		7,
-		0
-	]
-}
+			"D": {}
 		}
 	]
 }

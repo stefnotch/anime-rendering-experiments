@@ -7,7 +7,7 @@ namespace Game
     public class Tentacles : Script
     {
         public Model SplineModel;
-        public float TentacleLength = 140f;
+        public float TentacleLength = 145f;
         public float TipGroundRadius = 15f;
 
         /// <summary>
@@ -15,12 +15,8 @@ namespace Game
         /// </summary>
         public float TentacleMoveTime = 1f;
 
-        private readonly List<Spline> _splines = new List<Spline>();
-        private readonly List<IKJoint> _rootJoints = new List<IKJoint>();
-        private readonly List<Actor> _jointTips = new List<Actor>();
-        private readonly List<Vector3> _targetDirections = new List<Vector3>();
-        private readonly List<TargetPosition> _targetPositions = new List<TargetPosition>();
         private readonly List<Tentacle> _tentacles = new List<Tentacle>();
+        private Vector3 _previousPosition;
 
         private class Tentacle
         {
@@ -67,6 +63,8 @@ namespace Game
             /// </summary>
             public readonly Vector3 TargetDirection;
 
+            // TODO: Calculate the leg velocity. If it's in the air and the velocity is too low, try giving the leg a closer target
+
             public Tentacle(Tentacles tentaclesScript, Spline spline, IKJoint rootJoint, Actor jointTip, Vector3 position, Vector3 targetDirection)
             {
                 _tentacles = tentaclesScript;
@@ -97,11 +95,9 @@ namespace Game
                 }
             }
 
-            // TODO: After movement, update the OnGround flag depending on how far away from the ground the tencle is
-
-            private bool ShouldMove()
+            public bool ShouldMove()
             {
-                bool targetTooFar = OnGround && (TargetPosition - RootJoint.Actor.Position).Length > _tentacles.TentacleLength * 0.9f;
+                bool targetTooFar = OnGround && (TargetPosition - RootJoint.Actor.Position).Length > _tentacles.TentacleLength;
                 bool groundedTooFar = OnGround && (TargetPosition - JointTip.Position).Length > _tentacles.TipGroundRadius;
 
                 return targetTooFar || groundedTooFar;
@@ -115,6 +111,12 @@ namespace Game
                 {
                     RootJoint.Evaluate(JointTip, ref target);
                 }
+
+                // After movement, update the OnGround flag depending on how far away from the ground the tencle is
+                if (!OnGround)
+                {
+                    OnGround = (TargetPosition - JointTip.Position).Length <= _tentacles.TipGroundRadius;
+                }
             }
 
             public void UpdateSpline()
@@ -124,42 +126,23 @@ namespace Game
                 if (OnGround)
                 {
                     // TODO: Replace TargetPosition with the calculated target position
-                    splineOffset = TargetPosition - JointTip.Position;
+                    splineOffset = (TargetPosition - JointTip.Position) / (float)(Spline.SplinePointsCount - 1);
                 }
 
                 var ikActor = JointTip;
-                int splinePointCount = Spline.SplinePointsCount;
-                for (int i = splinePointCount - 1; i >= 0 && ikActor != null; i--)
+                for (int i = Spline.SplinePointsCount - 1; i >= 0 && ikActor != null; i--)
                 {
-                    Spline.SetSplinePoint(i, ikActor.Position + splineOffset / splinePointCount, false);
+                    Spline.SetSplinePoint(i, ikActor.Position + splineOffset, false);
                     ikActor = ikActor.Parent;
                 }
+                Spline.SetSplinePoint(0, RootJoint.Actor.Position, false);
 
                 Spline.UpdateSpline(); // TODO: Check out how slow this is
                 Spline.SetTangentsSmooth(); // TODO: Check out how slow this is
             }
-        }
 
-        private class TargetPosition
-        {
-            public Vector3 LastPosition;
-            public Vector3 Position;
-            public float StartTime;
-
-            public TargetPosition(Vector3 position, float gameTime)
-            {
-                LastPosition = Position = position;
-                StartTime = gameTime;
-            }
-
-            public void SetNewPosition(Vector3 position, float gameTime)
-            {
-                LastPosition = Position;
-                Position = position;
-                StartTime = gameTime;
-            }
-
-            public Vector3 GetLerpedPosition(float gameTime, float moveTime)
+            /*
+            private Vector3 GetLerpedPosition(float gameTime, float moveTime)
             {
                 float t = Mathf.Saturate((gameTime - StartTime) / moveTime);
                 Vector3.Lerp(ref LastPosition, ref Position, Mathf.InterpEaseOut(0, 1, t, 3), out Vector3 result);
@@ -167,11 +150,13 @@ namespace Game
                 // TODO: Fix this
                 //result += Vector3.Up * Mathf.Sin(t * Mathf.Pi) * 50f;
                 return result;
-            }
+            }*/
         }
 
         public override void OnEnable()
         {
+            _previousPosition = Actor.Position;
+
             //Int2 size = new Int2(2, 2);
             Int2 size = new Int2(8, 8);
             int numberOfSegments = 3;
@@ -183,24 +168,23 @@ namespace Game
                 {
                     Vector2 position = new Vector2(i - size.X / 2f, j + (isEven ? 0 : 0.5f) - size.Y / 2f);
 
-                    if (position.Length < size.X / 2f) // Good enough for now
+                    if (position.Length < size.X / 2f)
                     {
                         float yOffset = 5 * position.Length;
 
                         var spline = Actor.AddChild<Spline>();
                         spline.StaticFlags = StaticFlags.None;
-                        //   spline.HideFlags = HideFlags.FullyHidden;
+                        spline.HideFlags = HideFlags.FullyHidden;
                         spline.LocalPosition = new Vector3(position.X * 10f, yOffset, position.Y * 10f);
                         spline.LocalOrientation = Quaternion.RotationX(Mathf.PiOverTwo);
-                        _splines.Add(spline);
 
-                        for (int k = 0; k < 3; k++)
+                        for (int k = 0; k < numberOfSegments; k++)
                         {
                             spline.AddSplineLocalPoint(
                                 new Transform(
                                         new Vector3(position.X * k * 2.0f, position.Y * k, segmentLength * k),
                                         Quaternion.Identity,
-                                        new Vector3(1)
+                                        new Vector3(1 - (k / (float)numberOfSegments) * 0.5f)
                                     ), false);
                         }
                         spline.SetTangentsSmooth();
@@ -217,38 +201,35 @@ namespace Game
                         spline.UpdateSpline();
 
                         var ikJoint = Actor.AddChild<EmptyActor>().AddScript<IKJoint>();
+                        ikJoint.Enabled = false;
+                        //ikJoint.Actor.HideFlags = HideFlags.FullyHidden;
                         ikJoint.Actor.StaticFlags = StaticFlags.None;
                         ikJoint.Actor.LocalPosition = new Vector3(position.X * 10f, yOffset, position.Y * 10f);
-                        ikJoint.Enabled = false;
                         ikJoint.ClampToCone = true;
                         ikJoint.ConstraintAxis = Vector3.Down; // TODO: Move a bit to the outside
-                        ikJoint.MaxAngle = 60;
+                        ikJoint.MaxAngle = 100;
 
                         var secondIkJoint = ikJoint.Actor.AddChild<EmptyActor>().AddScript<IKJoint>();
+                        secondIkJoint.Enabled = false;
                         secondIkJoint.Actor.StaticFlags = StaticFlags.None;
                         secondIkJoint.Actor.LocalPosition = new Vector3(position.X * 2.0f, -segmentLength, position.Y);
-                        secondIkJoint.Enabled = false;
                         secondIkJoint.ClampToCone = true;
                         secondIkJoint.ConstraintAxis = Vector3.Down; // TODO: Move a bit to the outside
-                        secondIkJoint.MaxAngle = 60;
+                        secondIkJoint.MaxAngle = 100;
 
                         var ikTip = secondIkJoint.Actor.AddChild<EmptyActor>();
                         ikTip.StaticFlags = StaticFlags.None;
                         ikTip.LocalPosition = new Vector3(position.X * 2.0f, -segmentLength, position.Y);
 
-                        _targetPositions.Add(new TargetPosition(ikTip.Position, Time.GameTime));
-
-                        // TODO: Improve this (the enable dance)
                         Scripting.InvokeOnUpdate(() =>
                         {
-                            secondIkJoint.Enabled = true;
                             ikJoint.Enabled = true;
+                            secondIkJoint.Enabled = true;
                         });
 
-                        _rootJoints.Add(ikJoint);
-                        _jointTips.Add(ikTip);
+                        var targetDirection = new Vector3(position.X * 2f, -15f, position.Y * 2f).Normalized;
 
-                        _targetDirections.Add(new Vector3(position.X * 2f, -15f, position.Y * 2f).Normalized);
+                        _tentacles.Add(new Tentacle(this, spline, ikJoint, ikTip, ikTip.Position, targetDirection));
                     }
                 }
             }
@@ -256,103 +237,69 @@ namespace Game
 
         public override void OnDisable()
         {
-            _splines.Clear();
-            _rootJoints.Clear();
-            _jointTips.Clear();
-            _targetDirections.Clear();
-            _targetPositions.Clear();
             _tentacles.Clear();
             Actor.DestroyChildren();
         }
 
-        public override void OnFixedUpdate()
+        // There is no order guarantee, so the actor might move before/after this gets called https://docs.flaxengine.com/manual/scripting/events.html#order
+        // Thus, we have to do this
+        public void CustomFixedUpdate()
         {
-            // TODO: There is no order guarantee, so the actor might move before/after this gets called https://docs.flaxengine.com/manual/scripting/events.html#order
+            Vector3 positionDelta = Actor.Position - _previousPosition;
+            _previousPosition = Actor.Position;
 
-            float time = Time.GameTime;
-            for (int i = 0; i < _rootJoints.Count; i++)
+            for (int i = 0; i < _tentacles.Count; i++)
             {
-                Vector3 target = _targetPositions[i].GetLerpedPosition(time, TentacleMoveTime);
-                for (int j = 0; j < 1; j++)
+                _tentacles[i].UpdateInverseKinematics();
+            }
+
+            for (int i = 0; i < _tentacles.Count; i++)
+            {
+                // Move target while we are in the air
+                if (!_tentacles[i].OnGround)
                 {
-                    _rootJoints[i].Evaluate(_jointTips[i], ref target);
+                    _tentacles[i].SetNewTarget(_tentacles[i].TargetPosition + positionDelta);
+                    // TODO: Use raycasts every other frame
+                    //       and in the frames where we aren't using raycasts, just move the target positions that aren't on the ground by the actor position
                 }
+                // If the tentacle needs to be moved
+                else if (_tentacles[i].ShouldMove()) // TODO: ShouldMove could also do a raycast to find potential targets
+                {
+                    if (Physics.RayCast(_tentacles[i].RootJoint.Actor.Position, _tentacles[i].TargetDirection, out var hit, TentacleLength, layerMask: ~(1U << 1)))
+                    {
+                        _tentacles[i].SetNewTarget(hit.Point);
+                    }
+                    else
+                    {
+                        // TODO: Handle the case where the raycast didn't hit anything (slowly lower the tencle?)
+                    }
+                }
+
+                // TODO: Handle walls (later)
+                // TODO: Prevent tencles from just being sad & floaty 
+                // TODO: Prevent tencles from moving if nearby tencles are moving
             }
 
-            for (int i = 0; i < _rootJoints.Count; i++)
+            // Required to prevent the tentacle tips from being slidy and delayed
+            for (int i = 0; i < _tentacles.Count; i++)
             {
-                _splines[i].SetSplinePoint(0, _rootJoints[i].Actor.Position, false);
-                _splines[i].SetSplinePoint(1, _rootJoints[i].ChildJoint?.Actor?.Position ?? Vector3.Zero, false);
-                _splines[i].SetSplinePoint(2, StabilizeTentacleTip(_targetPositions[i], _jointTips[i].Position, time), false);
-                _splines[i].UpdateSpline(); // TODO: Check out how slow this is
-                _splines[i].SetTangentsSmooth(); // TODO: Check out how slow this is
+                _tentacles[i].UpdateSpline();
             }
-        }
-
-        /// <summary>
-        /// Visually stabilizes the tip of a tentacle
-        /// </summary>
-        private Vector3 StabilizeTentacleTip(TargetPosition targetPosition, Vector3 jointTipPosition, float time)
-        {
-            Vector3 target = targetPosition.GetLerpedPosition(time, TentacleMoveTime);
-
-            if (Vector3.Distance(ref target, ref jointTipPosition) < 15f)
-            {
-                return target;
-            }
-
-            return jointTipPosition;
         }
 
         public override void OnUpdate()
         {
-            float time = Time.GameTime;
-            for (int i = 0; i < _targetPositions.Count; i++)
+            for (int i = 0; i < _tentacles.Count; i++)
             {
-                Vector3 jointTipPosition = _jointTips[i].Position;
-
-
-                // TODO: Hmmm, would a sphere check work? (check if anything is in the bounding sphere of the tencle, move point there)
-                // TODO: Handle walls (later)
-
-                // TODO: Prevent tencles from just being sad & floaty 
-                // TODO: Prevent tencles from moving if nearby tencles are moving
-                if (Physics.RayCast(_rootJoints[i].Actor.Position, _targetDirections[i], out var hit, TentacleLength, layerMask: ~(1U << 1)))
-                {
-                    if (Vector3.Distance(ref jointTipPosition, ref hit.Point) > TipGroundRadius)
-                    {
-                        _targetPositions[i].SetNewPosition(hit.Point, time);
-                    }
-                }
-                else
-                {
-                    // TODO: Handle the case where the raycast didn't hit anything (slowly lower the tencle?)
-                }
-
-                // TODO: Detect if a leg is on the ground
-                // TODO: Calculate the leg velocity. If it's in the air and the velocity is too low, try giving the leg a closer target
-
-                // TODO: Use raycasts every other frame
-                //       and in the frames where we aren't using raycasts, just move the target positions that aren't on the ground by the actor position
-            }
-
-
-            // Update the splines
-            for (int i = 0; i < _rootJoints.Count; i++)
-            {
-                _splines[i].SetSplinePoint(0, _rootJoints[i].Actor.Position, false);
-                _splines[i].SetSplinePoint(1, _rootJoints[i].ChildJoint?.Actor?.Position ?? Vector3.Zero, false);
-                _splines[i].SetSplinePoint(2, _jointTips[i].Position, false);
-                _splines[i].UpdateSpline(); // TODO: Check out how slow this is
-                _splines[i].SetTangentsSmooth(); // TODO: Check out how slow this is
+                _tentacles[i].UpdateSpline();
             }
         }
 
-        public override void OnDebugDrawSelected()
+        public override void OnDebugDraw()
         {
-            for (int i = 0; i < _rootJoints.Count; i++)
+            for (int i = 0; i < _tentacles.Count; i++)
             {
-                DebugDraw.DrawLine(_rootJoints[i].Actor.Position, _rootJoints[i].Actor.Position + _targetDirections[i] * 25f, Color.Red);
+                DebugDraw.DrawWireSphere(new BoundingSphere(_tentacles[i].TargetPosition, 5f), Color.Red);
             }
         }
     }

@@ -1,7 +1,7 @@
 {
 	"ID": "9a7c91c24f02b66c8cd059a7a0a426c9",
 	"TypeName": "FlaxEngine.SceneAsset",
-	"EngineBuild": 6217,
+	"EngineBuild": 6218,
 	"Data": [
 		{
 			"ID": "9a7c91c24f02b66c8cd059a7a0a426c9",
@@ -70,15 +70,15 @@
 			"Name": "Scene Camera",
 			"Transform": {
 				"Translation": {
-					"X": 247.58251953125,
-					"Y": 184.14608764648438,
-					"Z": 326.115966796875
+					"X": 423.1587829589844,
+					"Y": 506.4349670410156,
+					"Z": 916.2063598632813
 				},
 				"Orientation": {
-					"X": -0.022512178868055345,
-					"Y": 0.9742432832717896,
-					"Z": -0.11322136968374253,
-					"W": -0.1937120258808136
+					"X": -0.08405913412570954,
+					"Y": 0.9142205715179443,
+					"Z": -0.30807748436927798,
+					"W": -0.24944566190242768
 				}
 			},
 			"StaticFlags": 0
@@ -109,9 +109,9 @@
 			"ParentID": "9a7c91c24f02b66c8cd059a7a0a426c9",
 			"Name": "BoxBrush",
 			"Size": {
-				"X": 500.0,
+				"X": 1500.0,
 				"Y": 100.0,
-				"Z": 800.0
+				"Z": 1600.0
 			},
 			"Surfaces": [
 				{},
@@ -366,6 +366,7 @@
 			"TypeName": "Game.PlayerScript",
 			"ParentID": "ac56e07046e00a9dcad450b800c47ba5",
 			"V": {
+	"Tentacles": "408d9d8545e4f77d8ad208971ad7fdc2",
 	"PlayerController": "ac56e07046e00a9dcad450b800c47ba5",
 	"CameraTarget": "ac56e07046e00a9dcad450b800c47ba5",
 	"Camera": "b37fdceb4b6fad88d44b509077911dd6",
@@ -423,8 +424,7 @@
 			"TypeName": "Game.Tentacles",
 			"ParentID": "8e0e0227477d1d75c6c124ac08964a7c",
 			"V": {
-	"SplineModel": "9a32805642aa24aa056f518aaf00ac44",
-	"ReachRadius": 150.0
+	"SplineModel": "9a32805642aa24aa056f518aaf00ac44"
 }
 		}
 	]

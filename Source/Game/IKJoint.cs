@@ -25,6 +25,10 @@ namespace Game
         [VisibleIf(nameof(ClampToCone))]
         public float MaxAngle = 180; // TODO: Custom degree editor?
 
+        // TODO: Flax has a regression regarding properties without a setter
+        [EditorOrder(100)]
+        [ShowInEditor]
+        [ReadOnly]
         private IKJoint _childJoint;
 
         public IKJoint ChildJoint => _childJoint;
@@ -45,7 +49,10 @@ namespace Game
 
         public override void OnDisable()
         {
-            _childJoint = null;
+            if (Actor.Parent.TryGetScript<IKJoint>(out var parentJoint))
+            {
+                parentJoint._childJoint = null;
+            }
         }
 
         public override void OnDebugDrawSelected()

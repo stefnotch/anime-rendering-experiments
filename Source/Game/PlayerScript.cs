@@ -5,6 +5,8 @@ namespace Game
 {
     public class PlayerScript : Script
     {
+        public Tentacles Tentacles;
+
         public CharacterController PlayerController;
         public Actor CameraTarget;
         public Camera Camera;
@@ -123,6 +125,8 @@ namespace Game
             // Move
             PlayerController.Move(velocity * Time.DeltaTime);
             _velocity = velocity;
+
+            Tentacles?.CustomFixedUpdate();
         }
 
         // accelDir: normalized direction that the player has requested to move (taking into account the movement keys and look direction)

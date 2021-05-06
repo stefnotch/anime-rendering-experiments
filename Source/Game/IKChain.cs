@@ -27,7 +27,7 @@ namespace Game
         public override void OnUpdate()
         {
             if (!Target || !RootJoint || !EndJoint) return;
-            var target = Target.Transform.Translation;
+            var target = Target.Position;
             RootJoint.Evaluate(EndJoint, ref target);
         }
     }
