@@ -25,7 +25,6 @@ namespace Game
         [VisibleIf(nameof(ClampToCone))]
         public float MaxAngle = 180; // TODO: Custom degree editor?
 
-
         private IKJoint _childJoint;
 
         public IKJoint ChildJoint => _childJoint;
@@ -34,12 +33,10 @@ namespace Game
         {
             // TODO: Child should register & unregister itself
             // TODO: Update the docs to reflect on that
-            for (int i = 0; i < Actor.ChildrenCount; i++)
+
+            if (Actor.Parent.TryGetScript<IKJoint>(out var parentJoint))
             {
-                if (Actor.GetChild(i).TryGetScript<IKJoint>(out _childJoint))
-                {
-                    break;
-                }
+                parentJoint._childJoint = this;
             }
 
             HingeAxis.Normalize();

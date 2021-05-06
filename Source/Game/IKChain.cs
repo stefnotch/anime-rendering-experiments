@@ -10,7 +10,7 @@ namespace Game
     public class IKChain : Script
     {
         /// <summary>
-        /// The target actor
+        /// The target actor that this chain should move towards
         /// </summary>
         public Actor Target;
 

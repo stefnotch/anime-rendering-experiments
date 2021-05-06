@@ -10,6 +10,7 @@ namespace Game
     // Some references:
     // https://zalo.github.io/blog/inverse-kinematics/
     // https://github.com/zalo/MathUtilities/blob/master/Assets/IK/CCDIK/CCDIKJoint.cs#L10
+    // TODO: prismatic joints?
     public class InverseKinematics
     {
         // Terrible name, suggest better one plez:
@@ -104,78 +105,5 @@ namespace Game
 
             return (unitDirection * Mathf.Cos(angleDelta)) + (perpendicularVector * Mathf.Sin(angleDelta));
         }
-
-        public struct IKJoint
-        {
-            public Transform LocalTransform;
-            public Transform Transform;
-        }
-
-        public class IKJointsList
-        {
-            public Spline Spline;
-            public IKJoint[] Joints;
-            public IKJointsList(Spline spline)
-            {
-                Spline = spline;
-                Joints = new IKJoint[spline.SplinePointsCount];
-            }
-
-            public void Update(ref Vector3 target)
-            {
-                IKJoint finalJoint = Joints[Joints.Length - 1];
-                finalJoint.LocalTransform.Translation = target;
-                // TODO: Set a decent rotation as well?
-                Joints[Joints.Length - 1] = finalJoint;
-
-                for (int i = Joints.Length - 2; i >= 0; i--)
-                {
-                    IKJoint joint = Joints[i];
-                    IKJoint targetJoint = Joints[i + 1];
-
-                    Vector3 directionToTip = targetJoint.LocalTransform.Translation - joint.LocalTransform.Translation;
-                    Vector3 directionToTarget = target - joint.LocalTransform.Translation;
-
-                    Quaternion rotation = FromVectors(ref directionToTip, ref directionToTarget);
-                    joint.LocalTransform.Orientation *= rotation; // TODO: Is this the correct order?
-
-                    // TODO: Constraints and stuff
-                }
-
-                Transform accumulatedTransform = Joints[0].LocalTransform;
-                for (int i = 1; i < Joints.Length; i++)
-                {
-                    IKJoint joint = Joints[i];
-                    joint.Transform = joint.LocalTransform.LocalToWorld(accumulatedTransform); // I hope that's in the correct order
-                    Joints[i] = joint;
-                }
-
-                // And now we gotta update the spline
-            }
-        }
-
-        /* public static void UpdateSpline(Spline spline, ref Vector3 target)
-         {
-             var pointsCount = spline.SplinePointsCount;
-             for (int i = pointsCount - 1; i >= 1; i--)
-             {
-
-
-                 for (int j = i; j < pointsCount; j++)
-                 {
-                     spline.SetSplineTransform(
-                         j,
-                         new Transform(
-                         spline.GetSplinePoint(j),
-                         rotation
-                         ),
-                         false
-                     );
-                     //spline.SetSplineLocalTransform
-                 }
-             }
-
-             spline.UpdateSpline();
-         }*/
     }
 }
