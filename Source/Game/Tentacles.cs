@@ -18,9 +18,18 @@ namespace Game
         private readonly List<Tentacle> _tentacles = new List<Tentacle>();
         private Vector3 _previousPosition;
 
+        private struct Tween
+        {
+            public Vector3 Start;
+            public Vector3 End;
+            public float StartTime;
+            public float Duration;
+        }
+
         private class Tentacle
         {
             private readonly Tentacles _tentacles;
+            private readonly List<Tween> _tweens = new List<Tween>();
 
             /// <summary>
             /// The tentacle spline
@@ -36,11 +45,6 @@ namespace Game
             /// The actor at the end of the IK chain
             /// </summary>
             public readonly Actor JointTip;
-
-            /// <summary>
-            /// The previous target position
-            /// </summary>
-            public Vector3 LastTargetPosition;
 
             /// <summary>
             /// The current target position
@@ -73,7 +77,7 @@ namespace Game
                 Spline = spline;
                 RootJoint = rootJoint;
                 JointTip = jointTip;
-                LastTargetPosition = TargetPosition = position;
+                TargetPosition = position;
                 MovementStartTime = Time.GameTime;
                 OnGround = false;
                 TargetDirection = targetDirection;
@@ -81,11 +85,17 @@ namespace Game
 
             public void SetNewTarget(Vector3 position)
             {
-                LastTargetPosition = TargetPosition;
+                _tweens.Add(new Tween()
+                {
+                    Start = JointTip.Position,
+                    End = position,
+                    StartTime = Time.GameTime,
+                    Duration = _tentacles.TentacleMoveTime
+                });
+
                 TargetPosition = position;
                 if (OnGround)
                 {
-                    MovementStartTime = Time.GameTime;
                     OnGround = false;
                 }
                 else
@@ -105,8 +115,7 @@ namespace Game
 
             public void UpdateInverseKinematics()
             {
-                // TODO: Replace TargetPosition with the calculated target position
-                Vector3 target = TargetPosition;
+                Vector3 target = GetLerpedPosition(Time.GameTime);
                 for (int j = 0; j < 1; j++) // Ik iterations
                 {
                     RootJoint.Evaluate(JointTip, ref target);
@@ -141,16 +150,46 @@ namespace Game
                 Spline.SetTangentsSmooth(); // TODO: Check out how slow this is
             }
 
-            /*
-            private Vector3 GetLerpedPosition(float gameTime, float moveTime)
+            // TODO: Thoroughly think through the lerping
+            private Vector3 GetLerpedPosition(float time)
             {
-                float t = Mathf.Saturate((gameTime - StartTime) / moveTime);
-                Vector3.Lerp(ref LastPosition, ref Position, Mathf.InterpEaseOut(0, 1, t, 3), out Vector3 result);
-                // slightly raise legs during movement
-                // TODO: Fix this
-                //result += Vector3.Up * Mathf.Sin(t * Mathf.Pi) * 50f;
+                if (_tweens.Count == 0) return TargetPosition;
+
+                bool firstIteration = true;
+                Vector3 result = Vector3.Zero;
+                for (int i = 0; i < _tweens.Count; i++)
+                {
+                    float t = Mathf.Saturate((time - _tweens[i].StartTime) / _tweens[i].Duration);
+                    var start = _tweens[i].Start;
+                    var end = _tweens[i].End;
+                    Vector3.Lerp(ref start, ref end, Mathf.InterpEaseOut(0, 1, t, 3), out Vector3 tweenResult);
+
+                    // slightly raise legs during movement
+                    //tweenResult += Vector3.Up * Mathf.Sin(t * Mathf.Pi) * 50f;
+
+                    if (firstIteration)
+                    {
+                        firstIteration = false;
+                        result = tweenResult;
+                    }
+                    else
+                    {
+                        float inbetweenDuration = _tweens[i].Duration * 0.1f;
+                        float inbetweenT = Mathf.Saturate((time - _tweens[i].StartTime) / inbetweenDuration);
+                        Vector3.Lerp(ref result, ref tweenResult, inbetweenT, out result);
+                    }
+                }
+
+                for (int i = _tweens.Count - 1; i >= 0; i--)
+                {
+                    if (_tweens[i].StartTime + _tweens[i].Duration < time)
+                    {
+                        //_tweens.RemoveAt(i);
+                    }
+                }
+
                 return result;
-            }*/
+            }
         }
 
         public override void OnEnable()
@@ -269,7 +308,8 @@ namespace Game
                 // If the tentacle needs to be moved
                 else if (_tentacles[i].ShouldMove()) // TODO: ShouldMove could also do a raycast to find potential targets
                 {
-                    if (Physics.RayCast(_tentacles[i].RootJoint.Actor.Position, _tentacles[i].TargetDirection, out var hit, TentacleLength, layerMask: ~(1U << 1)))
+                    var targetDirection = Actor.Transform.TransformDirection(_tentacles[i].TargetDirection);
+                    if (Physics.RayCast(_tentacles[i].RootJoint.Actor.Position, targetDirection, out var hit, TentacleLength, layerMask: ~(1U << 1)))
                     {
                         _tentacles[i].SetNewTarget(hit.Point);
                     }
