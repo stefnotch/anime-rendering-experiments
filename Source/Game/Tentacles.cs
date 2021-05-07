@@ -80,11 +80,11 @@ namespace Game
             {
                 _lastPosition = position;
                 TargetPosition = position;
-                MovementStartTime = Time.GameTime;
 
                 if (OnGround)
                 {
                     OnGround = false;
+                    MovementStartTime = Time.GameTime;
                 }
                 else
                 {
@@ -140,12 +140,27 @@ namespace Game
 
             private Vector3 GetLerpedPosition()
             {
-                Vector3.Lerp(ref _lastPosition, ref TargetPosition, 0.5f, out Vector3 tweenResult);
+                Vector3 start = JointTip.Position;
+                Vector3.Lerp(ref start, ref TargetPosition, 0.5f, out Vector3 tweenResult);
+
+                if (!OnGround)
+                {
+                    float timeSinceRaised = Time.GameTime - MovementStartTime;
+                    float distanceFromTarget = Vector3.Distance(ref TargetPosition, ref tweenResult);
+
+                    float t = Mathf.Saturate(timeSinceRaised / 0.2f);
+
+                    if (distanceFromTarget <= _tentacles.TipGroundRadius * 3f)
+                    {
+                        t *= distanceFromTarget / (_tentacles.TipGroundRadius * 3f);
+                    }
+
+                    // slightly raise legs during movement
+                    //tweenResult += Vector3.Up * Mathf.Sin(t * Mathf.Pi) * 50f;
+                }
+
                 return tweenResult;
             }
-
-            // TODO: slightly raise legs during movement
-            //tweenResult += Vector3.Up * Mathf.Sin(t * Mathf.Pi) * 50f;
         }
 
         public override void OnEnable()
