@@ -18,18 +18,10 @@ namespace Game
         private readonly List<Tentacle> _tentacles = new List<Tentacle>();
         private Vector3 _previousPosition;
 
-        private struct Tween
-        {
-            public Vector3 Start;
-            public Vector3 End;
-            public float StartTime;
-            public float Duration;
-        }
-
         private class Tentacle
         {
             private readonly Tentacles _tentacles;
-            private readonly List<Tween> _tweens = new List<Tween>();
+            private Vector3 _lastPosition;
 
             /// <summary>
             /// The tentacle spline
@@ -78,6 +70,7 @@ namespace Game
                 RootJoint = rootJoint;
                 JointTip = jointTip;
                 TargetPosition = position;
+                _lastPosition = position;
                 MovementStartTime = Time.GameTime;
                 OnGround = false;
                 TargetDirection = targetDirection;
@@ -85,15 +78,10 @@ namespace Game
 
             public void SetNewTarget(Vector3 position)
             {
-                _tweens.Add(new Tween()
-                {
-                    Start = JointTip.Position,
-                    End = position,
-                    StartTime = Time.GameTime,
-                    Duration = _tentacles.TentacleMoveTime
-                });
-
+                _lastPosition = position;
                 TargetPosition = position;
+                MovementStartTime = Time.GameTime;
+
                 if (OnGround)
                 {
                     OnGround = false;
@@ -115,7 +103,7 @@ namespace Game
 
             public void UpdateInverseKinematics()
             {
-                Vector3 target = GetLerpedPosition(Time.GameTime);
+                Vector3 target = GetLerpedPosition();
                 for (int j = 0; j < 1; j++) // Ik iterations
                 {
                     RootJoint.Evaluate(JointTip, ref target);
@@ -150,46 +138,14 @@ namespace Game
                 Spline.SetTangentsSmooth(); // TODO: Check out how slow this is
             }
 
-            // TODO: Thoroughly think through the lerping
-            private Vector3 GetLerpedPosition(float time)
+            private Vector3 GetLerpedPosition()
             {
-                if (_tweens.Count == 0) return TargetPosition;
-
-                bool firstIteration = true;
-                Vector3 result = Vector3.Zero;
-                for (int i = 0; i < _tweens.Count; i++)
-                {
-                    float t = Mathf.Saturate((time - _tweens[i].StartTime) / _tweens[i].Duration);
-                    var start = _tweens[i].Start;
-                    var end = _tweens[i].End;
-                    Vector3.Lerp(ref start, ref end, Mathf.InterpEaseOut(0, 1, t, 3), out Vector3 tweenResult);
-
-                    // slightly raise legs during movement
-                    //tweenResult += Vector3.Up * Mathf.Sin(t * Mathf.Pi) * 50f;
-
-                    if (firstIteration)
-                    {
-                        firstIteration = false;
-                        result = tweenResult;
-                    }
-                    else
-                    {
-                        float inbetweenDuration = _tweens[i].Duration * 0.1f;
-                        float inbetweenT = Mathf.Saturate((time - _tweens[i].StartTime) / inbetweenDuration);
-                        Vector3.Lerp(ref result, ref tweenResult, inbetweenT, out result);
-                    }
-                }
-
-                for (int i = _tweens.Count - 1; i >= 0; i--)
-                {
-                    if (_tweens[i].StartTime + _tweens[i].Duration < time)
-                    {
-                        //_tweens.RemoveAt(i);
-                    }
-                }
-
-                return result;
+                Vector3.Lerp(ref _lastPosition, ref TargetPosition, 0.5f, out Vector3 tweenResult);
+                return tweenResult;
             }
+
+            // TODO: slightly raise legs during movement
+            //tweenResult += Vector3.Up * Mathf.Sin(t * Mathf.Pi) * 50f;
         }
 
         public override void OnEnable()
